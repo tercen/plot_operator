@@ -17,7 +17,7 @@
 
 
 get_palettes <- function(ctx) {
-  wf <- ctx$client$workflowService$get(ctx$workflowId)
+  wf <- ctx$client$workflowService$get(ctx$workflow$id)
   ds <- Find(function(s) identical(s$id, ctx$stepId), wf$steps)
   palettes <- lapply(ds$model$axis$xyAxis, "[[", "colors")
   palettes
