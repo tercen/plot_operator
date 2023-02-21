@@ -1,10 +1,12 @@
 {
-  "name": "Template_R_operator",
-  "description": "Calculate the mathematical average of the data points in a cell.",
-  "tags": ["basic statistics"],
+  "name": "Plot",
+  "description": "Export a chart based on the crosstab projection.",
+  "tags": ["data visualisation", "export", "reporting"],
   "authors": ["tercen"],
-  "urls": ["https://github.com/tercen/template-R-operator-lite"],
-  "properties": []
+  "urls": ["https://github.com/tercen/plot_operator"],
+  "properties": [
+    
+  ]
 }
 
 
