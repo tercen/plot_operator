@@ -5,6 +5,9 @@ suppressPackageStartupMessages({
   library(tim)
 })
 
+source("./utils_colors.R")
+source("./utils.R")
+
 ctx = tercenCtx()
 
 ## add labels
