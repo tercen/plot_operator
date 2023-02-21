@@ -14,11 +14,29 @@
 #   
 #   return(df)
 # }
+get_workflow_id <- function(ctx) {
+  if(is.null(ctx$task)) {
+    return(ctx$workflowId)
+  } else {
+    workflowIdPair <- Find(function(pair) identical(pair$key, "workflow.id"), task$environment)
+    workflowId <- workflowIdPair$value
+    return(workflowId)
+  }
+}
 
+get_step_id <- function(ctx) {
+  if(is.null(ctx$task)) {
+    return(ctx$stepId)
+  } else {
+    stepIdPair <- Find(function(pair) identical(pair$key, "step.id"), task$environment)
+    stepId <- stepIdPair$value
+    return(stepId)
+  }
+}
 
 get_palettes <- function(ctx) {
-  wf <- ctx$client$workflowService$get(ctx$workflow$id)
-  ds <- Find(function(s) identical(s$id, ctx$stepId), wf$steps)
+  wf <- ctx$client$workflowService$get(get_workflow_id(ctx))
+  ds <- Find(function(s) identical(s$id, get_step_id(ctx)), wf$steps)
   palettes <- lapply(ds$model$axis$xyAxis, "[[", "colors")
   palettes
 }
