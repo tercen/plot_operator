@@ -18,7 +18,7 @@ get_workflow_id <- function(ctx) {
   if(is.null(ctx$task)) {
     return(ctx$workflowId)
   } else {
-    workflowIdPair <- Find(function(pair) identical(pair$key, "workflow.id"), task$environment)
+    workflowIdPair <- Find(function(pair) identical(pair$key, "workflow.id"), ctx$task$environment)
     workflowId <- workflowIdPair$value
     return(workflowId)
   }
@@ -28,7 +28,7 @@ get_step_id <- function(ctx) {
   if(is.null(ctx$task)) {
     return(ctx$stepId)
   } else {
-    stepIdPair <- Find(function(pair) identical(pair$key, "step.id"), task$environment)
+    stepIdPair <- Find(function(pair) identical(pair$key, "step.id"), ctx$task$environment)
     stepId <- stepIdPair$value
     return(stepId)
   }
