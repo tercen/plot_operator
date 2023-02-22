@@ -4,7 +4,7 @@
   "tags": ["data visualisation", "export", "reporting", "workflow"],
   "authors": ["tercen"],
   "urls": ["https://github.com/tercen/plot_operator"],
-  "properties":   "properties": [
+  "properties": [
   {
     "kind": "EnumeratedProperty",
     "name": "plot_type",
