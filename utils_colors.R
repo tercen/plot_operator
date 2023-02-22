@@ -16,7 +16,7 @@ int_to_rgba <- Vectorize(function(int) {
   green = bitwAnd(bitwShiftR(int, 8), 255)
   blue = bitwAnd(int, 255)
   alpha = bitwAnd(bitwShiftR(int, 24), 255)
-  rgb(red, green, blue, alpha, maxColorValue = 255) 
+  rgb(red, green, blue, alpha, maxColorValue = 255)
 })
 
 rgb_to_int <- Vectorize(function(rgb) {
