@@ -17,6 +17,7 @@ input.par <- get_settings(ctx)
 ds <- get_data_step(ctx)
 chart_types <- get_chart_types(ds)
 
+ctx$log(message = paste0("Generating chart: ", chart_types))
 ## add labels
 ## reorder rows
 ## scales parameter
@@ -26,7 +27,7 @@ pl <- get_palettes(ds)
 
 if(chart_types == "ChartHeatmap") {
   
-  plt <- ggplot(df, aes(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
+  plt <- ggplot(df, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
     geom_tile()
   
 } else if(chart_types == "ChartPoint") {
@@ -49,14 +50,13 @@ if(palette_kind == "CategoryPalette") {
     scale_colour_manual(values = tercen_palette(pl, n = 32))
 } else {
   plt <- plt + 
-    scale_color_gradientn(colours = tercen_palette(pl, n = 32), trans = "log") +
-    scale_fill_gradientn(colours = tercen_palette(pl, n = 32), trans = "log")
+    scale_color_gradientn(colours = tercen_palette(pl, n = 32)) +
+    scale_fill_gradientn(colours = tercen_palette(pl, n = 32))
 }
-
 
 #####
 ### Facets based on rows and columns
-if(ctx$chartTypes != "heatmap") {
+if(chart_types != "ChartHeatmap") {
   plt <- plt + get_facet_formula(ctx, input.par$wrap.1d)
 }
 
