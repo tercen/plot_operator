@@ -51,13 +51,20 @@ if(any(chart_types == "ChartHeatmap")) {
   
   plt <- ggplot(mapping = aes_string(x = ".x", y = ".y", fill = unique(unlist(ctx$colors)), color = unique(unlist(ctx$colors)))) 
   
+  pos <- switch (
+    input.par$bar.position,
+    "dodge" = position_dodge(width = input.par$dodge.width),
+    "stack" = "stack",
+    "fill" = "fill"
+  )
+  
   for(j in seq_along(chart_types)) {
     type <- chart_types[j]
     df_plot <- df %>% filter(.axisIndex == j - 1L)
     
     if(type == "ChartPoint") plt <- plt + geom_point(data = df_plot, size = 1)
     if(type == "ChartLine") plt <- plt + geom_line(data = df_plot)
-    if(type == "ChartBar") plt <- plt + geom_bar(data = df_plot)
+    if(type == "ChartBar") plt <- plt + geom_bar(data = df_plot, position = pos, stat = "identity")
   } 
   # apply per axis index: + geom_point, geom_line
   
@@ -117,7 +124,7 @@ plt_files <- tim::save_plot(
   device = device
 )
 
-tim::plot_file_to_df(plt_files) %>%
+tim::plot_file_to_df(plt_files, filename = "Tercen_Plot") %>%
   select(-checksum) %>%
   as_relation() %>%
   as_join_operator(list(), list()) %>%

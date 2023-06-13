@@ -101,7 +101,7 @@ get_facet_formula <- function(ctx, wrap.1d) {
 
 get_settings <- function(ctx) {
   input.par <- list(
-    plot.type    = ctx$op.value("plot.type", type = as.character, default = "png"),
+    plot.type    = ctx$op.value("plot_type", type = as.character, default = "png"),
     plot.width   = ctx$op.value("plot.width", type = as.double, default = 750),
     plot.height  = ctx$op.value("plot.height", type = as.double, default = 750),
     xlab         = ctx$op.value("xlab", type = as.character, default = ""),
