@@ -124,7 +124,7 @@ plt_files <- tim::save_plot(
   device = device
 )
 
-tim::plot_file_to_df(plt_files, filename = "Tercen_Plot") %>%
+tim::plot_file_to_df(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
   select(-checksum) %>%
   as_relation() %>%
   as_join_operator(list(), list()) %>%
