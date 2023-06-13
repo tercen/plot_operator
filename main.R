@@ -27,7 +27,7 @@ df <- getValues(ctx)
 pl <- get_palettes(ds)
 
 # stop if different colors in layers
-if(!any(unlist(lapply(ctx$colors, identical, ctx$colors[[1]])))) {
+if(length(ctx$colors) > 0 && !any(unlist(lapply(ctx$colors, identical, ctx$colors[[1]])))) {
   stop("The same color factors must be used across layers.")
 }
 
