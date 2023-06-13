@@ -5,10 +5,9 @@ suppressPackageStartupMessages({
   library(tim)
 })
 
+
 source("./utils_colors.R")
 source("./utils.R")
-
-
 
 ctx = tercenCtx()
 input.par <- get_settings(ctx)
@@ -19,8 +18,6 @@ input.par <- get_settings(ctx)
 ds <- get_data_step(ctx)
 chart_types <- get_chart_types(ds)
 
-ctx$log(paste0("wf ID: ", get_workflow_id(ctx = ctx)))
-ctx$log(paste0("step ID: ", get_step_id(ctx = ctx)))
 ctx$log(message = paste0("Generating chart: ", chart_types))
 ## add labels
 ## reorder rows
@@ -29,18 +26,40 @@ ctx$log(message = paste0("Generating chart: ", chart_types))
 df <- getValues(ctx)
 pl <- get_palettes(ds)
 
-if(chart_types == "ChartHeatmap") {
+# stop if different colors in layers
+if(!any(unlist(lapply(ctx$colors, identical, ctx$colors[[1]])))) {
+  stop("The same color factors must be used across layers.")
+}
+
+# Initialise chart
+if(any(chart_types == "ChartHeatmap")) {
   
-  plt <- ggplot(df, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
+  if(length(chart_types) > 1) {
+    layer <- which(chart_types == "ChartHeatmap")[1] - 1L
+    ctx$log("Multiple layers found. Only the first Heatmap will be represented.")
+  }
+  
+  df_plot <- df %>% filter(.axisIndex == layer)
+
+  plt <- ggplot(df_plot, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
     geom_tile()
   
-} else if(chart_types == "ChartPoint") {
+} else if(all(chart_types %in% c("ChartPoint", "ChartLine", "ChartBar"))) {
   
   ncells <- ctx$cschema$nRows * ctx$rschema$nRows
   if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
   
-  plt <- ggplot(df, aes_string(x = ".x", y = ".y", fill = unlist(ctx$colors), color = unlist(ctx$colors))) +
-    geom_point(size = 1)
+  plt <- ggplot(mapping = aes_string(x = ".x", y = ".y", fill = unique(unlist(ctx$colors)), color = unique(unlist(ctx$colors)))) 
+  
+  for(j in seq_along(chart_types)) {
+    type <- chart_types[j]
+    df_plot <- df %>% filter(.axisIndex == j - 1L)
+    
+    if(type == "ChartPoint") plt <- plt + geom_point(data = df_plot, size = 1)
+    if(type == "ChartLine") plt <- plt + geom_line(data = df_plot)
+    if(type == "ChartBar") plt <- plt + geom_bar(data = df_plot)
+  } 
+  # apply per axis index: + geom_point, geom_line
   
 } else {
   
@@ -48,6 +67,7 @@ if(chart_types == "ChartHeatmap") {
   
 }
 
+# Add colors
 palette_kind <- class(pl[[1]]$palette)[1]
 if(palette_kind == "CategoryPalette") {
   plt <- plt + 
@@ -60,7 +80,7 @@ if(palette_kind == "CategoryPalette") {
 
 #####
 ### Facets based on rows and columns
-if(chart_types != "ChartHeatmap") {
+if(!any(chart_types == "ChartHeatmap")) {
   plt <- plt + get_facet_formula(ctx, input.par$wrap.1d)
 }
 
@@ -71,8 +91,8 @@ plt <- plt +
     title = input.par$title,
     subtitle = input.par$subtitle,
     caption = input.par$caption,
-    x = input.par$xlab,
-    y = input.par$ylab,
+    x = if_else(input.par$xlab == "", paste0(ctx$xAxis, collapse = " - "), input.par$xlab),
+    y = if_else(input.par$ylab == "", paste0(ctx$yAxis, collapse = " - "), input.par$ylab),
     color = "Legend",
     fill = "Legend"
   ) +

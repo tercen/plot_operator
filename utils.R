@@ -125,12 +125,12 @@ get_settings <- function(ctx) {
 #####
 ### Data preprocessing
 
-getValues <- function(ctx){
-  data <- ctx %>% select(.y, .ri, .ci)
+getValues <- function(ctx) {
+  data <- ctx %>% select(.y, .ri, .ci, .axisIndex)
   if(ctx$hasXAxis) data$.x <- select(ctx, .x)[[".x"]]
   
-  if(length(ctx$colors)) data <- data %>% dplyr::bind_cols(ctx$select(ctx$colors))
-  if(length(ctx$labels)) data <- data %>% dplyr::bind_cols(ctx$select(ctx$labels))
+  if(length(ctx$colors)) data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$colors)))
+  if(length(ctx$labels)) data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$labels)))
   
   rnames <- ctx$rselect() 
   rnames$.ri <- seq_len(nrow(rnames)) - 1
