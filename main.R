@@ -35,10 +35,9 @@ if(length(ctx$colors) > 0 && !any(unlist(lapply(ctx$colors, identical, ctx$color
 if(any(chart_types == "ChartHeatmap")) {
   
   if(length(chart_types) > 1) {
-    layer <- which(chart_types == "ChartHeatmap")[1] - 1L
     ctx$log("Multiple layers found. Only the first Heatmap will be represented.")
   }
-  
+  layer <- which(chart_types == "ChartHeatmap")[1] - 1L
   df_plot <- df %>% filter(.axisIndex == layer)
 
   plt <- ggplot(df_plot, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
