@@ -18,7 +18,7 @@ input.par <- get_settings(ctx)
 ds <- get_data_step(ctx)
 chart_types <- get_chart_types(ds)
 
-ctx$log(message = paste0("Generating chart: ", chart_types))
+ctx$log(message = paste0("Generating chart: ", paste0(chart_types, collapse = " + ")))
 ## add labels
 ## reorder rows
 ## scales parameter
