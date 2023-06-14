@@ -63,7 +63,7 @@ tercen_palette <- function(palette_list, n = 32) {
   return(palette.colors)
 }
 
-get_facet_formula <- function(ctx, wrap.1d) {
+get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
   cnames <- unlist(ctx$cnames)
   if(ctx$cnames[[1]] == "") cnames <- "."
   rnames <- unlist(ctx$rnames)
@@ -80,7 +80,8 @@ get_facet_formula <- function(ctx, wrap.1d) {
         paste(rnames, collapse = "+"),
         "+",
         paste(cnames, collapse = "+")
-      ))
+      )),
+      scales = scales_mode
     )
   } else {
     facet <- facet_grid(
@@ -88,7 +89,8 @@ get_facet_formula <- function(ctx, wrap.1d) {
         paste(rnames, collapse = "+"),
         "~",
         paste(cnames, collapse = "+")
-      ))
+      )),
+      scales = scales_mode
     )
   }
   
@@ -116,6 +118,7 @@ get_settings <- function(ctx) {
     dodge.width  = ctx$op.value("dodge.width", type = as.double, default = 1.1),
     jitter.width = ctx$op.value("jitter.width", type = as.double, default = 0.05),
     color.palette= ctx$op.value("color.palette", type = as.character, default = "crosstab"),
+    scales       = ctx$op.value("scales", type = as.character, default = "fixed"),
     wrap.1d      = ctx$op.value("wrap.1d", type = as.logical, default = TRUE)
   )
   return(input.par)

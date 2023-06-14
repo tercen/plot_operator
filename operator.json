@@ -87,6 +87,18 @@
     "description": "Theme (from ggplot2)."
   },
   {
+    "kind": "EnumeratedProperty",
+    "name": "scales",
+    "defaultValue": "fixed",
+    "values": [
+      "fixed",
+      "free",
+      "free_x",
+      "free_y"
+    ],
+    "description": "Scales mode (from ggplot2)."
+  },
+  {
     "kind": "BooleanProperty",
     "name": "wrap.1d",
     "defaultValue": true,

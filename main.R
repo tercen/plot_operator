@@ -6,7 +6,6 @@ suppressPackageStartupMessages({
   library(svglite)
 })
 
-
 source("./utils_colors.R")
 source("./utils.R")
 
@@ -64,7 +63,7 @@ if(any(chart_types == "ChartHeatmap")) {
     
     if(type == "ChartPoint") plt <- plt + geom_point(data = df_plot, size = 1)
     if(type == "ChartLine") plt <- plt + geom_line(data = df_plot)
-    if(type == "ChartBar") plt <- plt + geom_bar(data = df_plot, position = pos, stat = "identity")
+    if(type == "ChartBar") plt <- plt + geom_bar(data = df_plot, position = pos, stat = "identity", colour="black")
   } 
   # apply per axis index: + geom_point, geom_line
   
@@ -88,7 +87,7 @@ if(palette_kind == "CategoryPalette") {
 #####
 ### Facets based on rows and columns
 if(!any(chart_types == "ChartHeatmap")) {
-  plt <- plt + get_facet_formula(ctx, input.par$wrap.1d)
+  plt <- plt + get_facet_formula(ctx, input.par$wrap.1d, input.par$scales)
 }
 
 #####
