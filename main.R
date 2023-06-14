@@ -3,6 +3,7 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(ggplot2)
   library(tim)
+  library(svglite)
 })
 
 
@@ -101,8 +102,10 @@ plt <- plt +
     y = if_else(input.par$ylab == "", paste0(ctx$yAxis, collapse = " - "), input.par$ylab),
     color = "Legend",
     fill = "Legend"
-  ) +
-  theme_classic()
+  )
+
+th <- get(paste0("theme_", input.par$theme))
+theme_set(th())
 
 #####
 ## Save plot file
