@@ -134,6 +134,11 @@ getValues <- function(ctx) {
   
   if(length(ctx$colors)) data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$colors)))
   if(length(ctx$labels)) data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$labels)))
+  if(length(ctx$errors)) {
+    data$.error <- select(ctx, .error)[[".error"]]
+    data$.ymin <- data$.y - data$.error
+    data$.ymax <- data$.y + data$.error
+  } 
   
   rnames <- ctx$rselect() 
   rnames$.ri <- seq_len(nrow(rnames)) - 1

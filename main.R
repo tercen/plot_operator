@@ -12,6 +12,8 @@ source("./utils.R")
 ctx = tercenCtx()
 input.par <- get_settings(ctx)
 
+default_color <- "#36454f"
+
 #####
 ### Get data step and meta data
 
@@ -19,9 +21,10 @@ ds <- get_data_step(ctx)
 chart_types <- get_chart_types(ds)
 
 ctx$log(message = paste0("Generating chart: ", paste0(chart_types, collapse = " + ")))
+
 ## add labels
 ## reorder rows
-## scales parameter
+## support for error bars
 
 df <- getValues(ctx)
 pl <- get_palettes(ds)
@@ -48,7 +51,12 @@ if(any(chart_types == "ChartHeatmap")) {
   ncells <- ctx$cschema$nRows * ctx$rschema$nRows
   if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
   
-  plt <- ggplot(mapping = aes_string(x = ".x", y = ".y", fill = unique(unlist(ctx$colors)), color = unique(unlist(ctx$colors)))) 
+  col_factors <- unique(unlist(ctx$colors))
+  plt <- ggplot(mapping = aes_string(
+    x = ".x", y = ".y",
+    fill = col_factors,
+    order = col_factors
+  )) 
   
   pos <- switch (
     input.par$bar.position,
@@ -61,11 +69,40 @@ if(any(chart_types == "ChartHeatmap")) {
     type <- chart_types[j]
     df_plot <- df %>% filter(.axisIndex == j - 1L)
     
-    if(type == "ChartPoint") plt <- plt + geom_point(data = df_plot, size = 1)
-    if(type == "ChartLine") plt <- plt + geom_line(data = df_plot)
-    if(type == "ChartBar") plt <- plt + geom_bar(data = df_plot, position = pos, stat = "identity", colour="black")
+    if(type == "ChartPoint") {
+      plt <- plt + geom_point(
+        data = df_plot,
+        shape = 21,
+        size = 1.5,
+        stroke = 0
+      )
+    } 
+    if(type == "ChartLine") {
+      plt <- plt + geom_line(
+        data = df_plot
+      )
+    }
+    if(type == "ChartBar") {
+      plt <- plt + geom_bar(
+        data = df_plot,
+        position = pos,
+        stat = "identity",
+        width = 1,
+        color = default_color
+      )
+    } 
+    
+    # Error bars
+    if(".error" %in% colnames(df)) {
+      plt <- plt +
+        geom_errorbar(
+          data = df_plot,
+          aes_string(ymin = ".ymin", ymax = ".ymax"),
+          width = 0.2,
+          color = default_color
+        )
+    } 
   } 
-  # apply per axis index: + geom_point, geom_line
   
 } else {
   
