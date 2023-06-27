@@ -104,8 +104,8 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
 get_settings <- function(ctx) {
   input.par <- list(
     plot.type    = ctx$op.value("plot_type", type = as.character, default = "png"),
-    plot.width   = ctx$op.value("plot.width", type = as.double, default = 750),
-    plot.height  = ctx$op.value("plot.height", type = as.double, default = 750),
+    plot.width   = ctx$op.value("plot.width", type = as.double, default = ""),
+    plot.height  = ctx$op.value("plot.height", type = as.double, default = ""),
     xlab         = ctx$op.value("xlab", type = as.character, default = ""),
     ylab         = ctx$op.value("ylab", type = as.character, default = ""),
     title        = ctx$op.value("title", type = as.character, default = ""),
@@ -120,7 +120,8 @@ get_settings <- function(ctx) {
     jitter.width = ctx$op.value("jitter.width", type = as.double, default = 0.05),
     color.palette= ctx$op.value("color.palette", type = as.character, default = "crosstab"),
     scales       = ctx$op.value("scales", type = as.character, default = "fixed"),
-    wrap.1d      = ctx$op.value("wrap.1d", type = as.logical, default = TRUE)
+    wrap.1d      = ctx$op.value("wrap.1d", type = as.logical, default = TRUE),
+    flip      = ctx$op.value("flip", type = as.logical, default = FALSE)
   )
   return(input.par)
 }

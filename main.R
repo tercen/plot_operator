@@ -20,11 +20,15 @@ default_color <- "#36454f"
 ds <- get_data_step(ctx)
 chart_types <- get_chart_types(ds)
 
-ctx$log(message = paste0("Generating chart: ", paste0(chart_types, collapse = " + ")))
+### Default width and height
+if(input.par$plot.width == "" | is.na(input.par$plot.width)) {
+  input.par$plot.width <- round(100 + 1.25 * ds$model$columnTable$cellSize * ctx$cschema$nRows)
+}
+if(input.par$plot.height == "" | is.na(input.par$plot.height)) {
+  input.par$plot.height <- round(1.25 * ds$model$rowTable$cellSize * ctx$rschema$nRows)
+}
 
-## add labels
-## reorder rows
-## support for error bars
+ctx$log(message = paste0("Generating charts: ", paste0(chart_types, collapse = " + ")))
 
 df <- getValues(ctx)
 pl <- get_palettes(ds)
@@ -44,7 +48,8 @@ if(any(chart_types == "ChartHeatmap")) {
   df_plot <- df %>% filter(.axisIndex == layer)
 
   plt <- ggplot(df_plot, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
-    geom_tile()
+    geom_tile() +
+    scale_y_reverse()
   
 } else if(all(chart_types %in% c("ChartPoint", "ChartLine", "ChartBar"))) {
   
@@ -89,7 +94,7 @@ if(any(chart_types == "ChartHeatmap")) {
         position = pos,
         stat = "identity",
         size = 0.5 * 1,
-        width = 1,
+        width = 0.5,
         color = default_color
       )
     } 
@@ -152,6 +157,8 @@ plt <- plt +
 th <- get(paste0("theme_", input.par$theme))
 theme_set(th(base_size = input.par$base.size))
 
+if(input.par$flip) plt <- plt + coord_flip()
+
 #####
 ## Save plot file
 if(input.par$plot.type ==  "svg2") {
@@ -170,6 +177,8 @@ plt_files <- tim::save_plot(
   dpi = 144,
   device = device
 )
+
+on.exit(unlink(plt_files))
 
 tim::plot_file_to_df(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
   select(-checksum) %>%

@@ -18,16 +18,16 @@
     "description": "Output file format."
   },
   {
-    "kind": "DoubleProperty",
+    "kind": "StringProperty",
     "name": "plot.width",
-    "defaultValue": 750,
-    "description": "Plot width (pixels)"
+    "defaultValue": "",
+    "description": "Plot width (pixels). If left empty, crosstab dimensions will be used."
   },
   {
-    "kind": "DoubleProperty",
+    "kind": "StringProperty",
     "name": "plot.height",
-    "defaultValue": 750,
-    "description": "Plot height (pixels)"
+    "defaultValue": "",
+    "description": "Plot height (pixels). If left empty, crosstab dimensions will be used."
   },
   {
     "kind": "DoubleProperty",
@@ -109,6 +109,12 @@
     "name": "wrap.1d",
     "defaultValue": true,
     "description": "Wraps a 1d sequence of panels into 2d if no row or column factor is specified."
+  },
+  {
+    "kind": "BooleanProperty",
+    "name": "flip",
+    "defaultValue": false,
+    "description": "Whether to flip x and y axes."
   }
   ]
 }
