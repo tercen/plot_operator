@@ -30,6 +30,12 @@
     "description": "Plot height (pixels)"
   },
   {
+    "kind": "DoubleProperty",
+    "name": "base.size",
+    "defaultValue": 11,
+    "description": "Text elements base size."
+  },
+  {
     "kind": "StringProperty",
     "name": "xlab",
     "defaultValue": "",

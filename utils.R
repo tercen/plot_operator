@@ -112,6 +112,7 @@ get_settings <- function(ctx) {
     subtitle     = ctx$op.value("subtitle", type = as.character, default = ""),
     caption      = ctx$op.value("caption", type = as.character, default = ""),
     theme        = ctx$op.value("theme", type = as.character, default = "light"),
+    base.size    = ctx$op.value("base.size", type = as.double, default = 11),
     dot.size     = ctx$op.value("dot.size", type = as.double, default = 0.5),
     bar.position = ctx$op.value("bar.position", type = as.character, default = "dodge"),
     bar.width    = ctx$op.value("bar.width", type = as.double, default = 0.25),
@@ -151,4 +152,17 @@ getValues <- function(ctx) {
     select(-ends_with(".YYY"))
   
   return(data)
+}
+
+
+
+get_axis_labels <- function(ctx, lab, type) {
+  nms <- switch(
+    type,
+    "x" = ctx$xAxis,
+    "y" = ctx$yAxis,
+    "col"= ctx$cnames,
+    "row"= ctx$rnames
+  )
+  if_else(lab == "", paste0(nms, collapse = " - "), lab)
 }

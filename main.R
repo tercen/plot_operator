@@ -73,13 +73,14 @@ if(any(chart_types == "ChartHeatmap")) {
       plt <- plt + geom_point(
         data = df_plot,
         shape = 21,
-        size = 1.5,
-        stroke = 0
+        size = 2 * 1,
+        stroke = 0.1
       )
     } 
     if(type == "ChartLine") {
       plt <- plt + geom_line(
-        data = df_plot
+        data = df_plot,
+        size = 1
       )
     }
     if(type == "ChartBar") {
@@ -87,6 +88,7 @@ if(any(chart_types == "ChartHeatmap")) {
         data = df_plot,
         position = pos,
         stat = "identity",
+        size = 0.5 * 1,
         width = 1,
         color = default_color
       )
@@ -98,6 +100,7 @@ if(any(chart_types == "ChartHeatmap")) {
         geom_errorbar(
           data = df_plot,
           aes_string(ymin = ".ymin", ymax = ".ymax"),
+          size = 1,
           width = 0.2,
           color = default_color
         )
@@ -114,7 +117,8 @@ if(any(chart_types == "ChartHeatmap")) {
 palette_kind <- class(pl[[1]]$palette)[1]
 if(palette_kind == "CategoryPalette") {
   plt <- plt + 
-    scale_colour_manual(values = tercen_palette(pl, n = 32))
+    scale_colour_manual(values = tercen_palette(pl, n = 32)) + 
+    scale_fill_manual(values = tercen_palette(pl, n = 32))
 } else {
   plt <- plt + 
     scale_color_gradientn(colours = tercen_palette(pl, n = 32)) +
@@ -125,6 +129,11 @@ if(palette_kind == "CategoryPalette") {
 ### Facets based on rows and columns
 if(!any(chart_types == "ChartHeatmap")) {
   plt <- plt + get_facet_formula(ctx, input.par$wrap.1d, input.par$scales)
+  xlab <- get_axis_labels(ctx, input.par$xlab, "x")
+  ylab <- get_axis_labels(ctx, input.par$ylab, "y")
+} else {
+  xlab <- get_axis_labels(ctx, input.par$xlab, "row")
+  ylab <- get_axis_labels(ctx, input.par$ylab, "col")
 }
 
 #####
@@ -134,14 +143,14 @@ plt <- plt +
     title = input.par$title,
     subtitle = input.par$subtitle,
     caption = input.par$caption,
-    x = if_else(input.par$xlab == "", paste0(ctx$xAxis, collapse = " - "), input.par$xlab),
-    y = if_else(input.par$ylab == "", paste0(ctx$yAxis, collapse = " - "), input.par$ylab),
+    x = xlab,
+    y = ylab,
     color = "Legend",
     fill = "Legend"
   )
 
 th <- get(paste0("theme_", input.par$theme))
-theme_set(th())
+theme_set(th(base_size = input.par$base.size))
 
 #####
 ## Save plot file
