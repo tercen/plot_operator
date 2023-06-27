@@ -56,7 +56,8 @@ if(any(chart_types == "ChartHeatmap")) {
   ncells <- ctx$cschema$nRows * ctx$rschema$nRows
   if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
   
-  col_factors <- unique(unlist(ctx$colors))
+  col_factors <- paste0("`", unique(unlist(ctx$colors)), "`")
+
   plt <- ggplot(mapping = aes_string(
     x = ".x", y = ".y",
     fill = col_factors,
