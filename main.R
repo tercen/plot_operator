@@ -56,11 +56,13 @@ if(any(chart_types == "ChartHeatmap")) {
   ncells <- ctx$cschema$nRows * ctx$rschema$nRows
   if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
   
-  col_factors <- paste0("`", unique(unlist(ctx$colors)), "`")
-
+  col_factors <- unique(unlist(ctx$colors))
+  if(!is.null(col_factors)) col_factors <- paste0("`", col_factors, "`")
+  
   plt <- ggplot(mapping = aes_string(
     x = ".x", y = ".y",
     fill = col_factors,
+    group = col_factors,
     order = col_factors
   )) 
   
@@ -86,6 +88,7 @@ if(any(chart_types == "ChartHeatmap")) {
     if(type == "ChartLine") {
       plt <- plt + geom_line(
         data = df_plot,
+        mapping = aes_string(color = col_factors),
         size = 1
       )
     }
