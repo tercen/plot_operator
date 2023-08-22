@@ -12,180 +12,55 @@ source("./utils.R")
 ctx = tercenCtx()
 input.par <- get_settings(ctx)
 
+split_cells <- TRUE
+
 default_color <- "#36454f"
 
 #####
 ### Get data step and meta data
 
 ds <- get_data_step(ctx)
-chart_types <- get_chart_types(ds)
-
-### Default width and height
-if(input.par$plot.width == "" | is.na(input.par$plot.width)) {
-  input.par$plot.width <- round(100 + 1.25 * ds$model$columnTable$cellSize * ctx$cschema$nRows)
-}
-if(input.par$plot.height == "" | is.na(input.par$plot.height)) {
-  input.par$plot.height <- round(1.25 * ds$model$rowTable$cellSize * ctx$rschema$nRows)
-}
-
-ctx$log(message = paste0("Generating charts: ", paste0(chart_types, collapse = " + ")))
 
 df <- getValues(ctx)
 pl <- get_palettes(ds)
 
-# stop if different colors in layers
-if(length(ctx$colors) > 0 && !any(unlist(lapply(ctx$colors, identical, ctx$colors[[1]])))) {
-  stop("The same color factors must be used across layers.")
-}
 
-# Initialise chart
-if(any(chart_types == "ChartHeatmap")) {
-  
-  if(length(chart_types) > 1) {
-    ctx$log("Multiple layers found. Only the first Heatmap will be represented.")
-  }
-  layer <- which(chart_types == "ChartHeatmap")[1] - 1L
-  df_plot <- df %>% filter(.axisIndex == layer)
+n_cells <- ctx$cschema$nRows * ctx$rschema$nRows
 
-  plt <- ggplot(df_plot, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
-    geom_tile() +
-    scale_y_reverse()
+if(n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
+
+if(n_cells > 25 | split_cells) {
+  df <- df %>% group_by(.ci, .ri)
+  plt_names <- df %>% 
+    group_data %>% 
+    select(-.rows) %>% 
+    tidyr::unite("label")
+  plt_files <- df %>%
+    group_map(~ generate_plot(ctx, ., pl, input.par, ds, multipanel = FALSE)) %>%
+    unlist
+  new_names <- paste0(dirname(plt_files)[1], "/Tercen_Plot_", plt_names$label)
+  file.rename(plt_files, new_names)
+  on.exit(unlink(new_names))
   
-} else if(all(chart_types %in% c("ChartPoint", "ChartLine", "ChartBar"))) {
+  zip_file <- paste0(dirname(new_names)[1], "/Tercen_Plots.zip")
+  on.exit(unlink(zip_file))
+  zip::zipr(zipfile = zip_file, files = new_names)
   
-  ncells <- ctx$cschema$nRows * ctx$rschema$nRows
-  if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
-  
-  col_factors <- unique(unlist(ctx$colors))
-  if(!is.null(col_factors)) col_factors <- paste0("`", col_factors, "`")
-  
-  plt <- ggplot(mapping = aes_string(
-    x = ".x", y = ".y",
-    fill = col_factors,
-    group = col_factors,
-    order = col_factors
-  )) 
-  
-  pos <- switch (
-    input.par$bar.position,
-    "dodge" = position_dodge(width = input.par$dodge.width),
-    "stack" = "stack",
-    "fill" = "fill"
-  )
-  
-  for(j in seq_along(chart_types)) {
-    type <- chart_types[j]
-    df_plot <- df %>% filter(.axisIndex == j - 1L)
-    
-    if(type == "ChartPoint") {
-      plt <- plt + geom_point(
-        data = df_plot,
-        shape = 21,
-        size = 2 * 1,
-        stroke = 0.1
-      )
-    } 
-    if(type == "ChartLine") {
-      plt <- plt + geom_line(
-        data = df_plot,
-        mapping = aes_string(color = col_factors),
-        size = 1
-      )
-    }
-    if(type == "ChartBar") {
-      plt <- plt + geom_bar(
-        data = df_plot,
-        position = pos,
-        stat = "identity",
-        size = 0.5 * 1,
-        width = 0.5,
-        color = default_color
-      )
-    } 
-    
-    # Error bars
-    if(".error" %in% colnames(df)) {
-      plt <- plt +
-        geom_errorbar(
-          data = df_plot,
-          aes_string(ymin = ".ymin", ymax = ".ymax"),
-          size = 1,
-          width = 0.2,
-          color = default_color
-        )
-    } 
-  } 
+  tim::plot_file_to_df(zip_file) %>%
+    select(-checksum) %>%
+    as_relation() %>%
+    as_join_operator(list(), list()) %>%
+    save_relation(ctx)
   
 } else {
+  plt_files <- generate_plot(ctx, df, pl, input.par, ds)
+  on.exit(unlink(plt_files))
   
-  stop("This chart type is not supported.")
-  
+  tim::plot_file_to_df(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
+    select(-checksum) %>%
+    as_relation() %>%
+    as_join_operator(list(), list()) %>%
+    save_relation(ctx)
 }
 
-# Add colors
-palette_kind <- class(pl[[1]]$palette)[1]
-if(palette_kind == "CategoryPalette") {
-  plt <- plt + 
-    scale_colour_manual(values = tercen_palette(pl, n = 32)) + 
-    scale_fill_manual(values = tercen_palette(pl, n = 32))
-} else {
-  plt <- plt + 
-    scale_color_gradientn(colours = tercen_palette(pl, n = 32)) +
-    scale_fill_gradientn(colours = tercen_palette(pl, n = 32))
-}
-
-#####
-### Facets based on rows and columns
-if(!any(chart_types == "ChartHeatmap")) {
-  plt <- plt + get_facet_formula(ctx, input.par$wrap.1d, input.par$scales)
-  xlab <- get_axis_labels(ctx, input.par$xlab, "x")
-  ylab <- get_axis_labels(ctx, input.par$ylab, "y")
-} else {
-  xlab <- get_axis_labels(ctx, input.par$xlab, "row")
-  ylab <- get_axis_labels(ctx, input.par$ylab, "col")
-}
-
-#####
-## Set theme
-plt <- plt + 
-  labs(
-    title = input.par$title,
-    subtitle = input.par$subtitle,
-    caption = input.par$caption,
-    x = xlab,
-    y = ylab,
-    color = "Legend",
-    fill = "Legend"
-  )
-
-th <- get(paste0("theme_", input.par$theme))
-theme_set(th(base_size = input.par$base.size))
-
-if(input.par$flip) plt <- plt + coord_flip()
-
-#####
-## Save plot file
-if(input.par$plot.type ==  "svg2") {
-  input.par$plot.type <- "svg"
-  device <- svg
-} else {
-  device <- NULL
-}
-
-plt_files <- tim::save_plot(
-  plt,
-  type = input.par$plot.type,
-  width = input.par$plot.width / 144,
-  height = input.par$plot.height / 144,
-  units = "in",
-  dpi = 144,
-  device = device
-)
-
-on.exit(unlink(plt_files))
-
-tim::plot_file_to_df(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
-  select(-checksum) %>%
-  as_relation() %>%
-  as_join_operator(list(), list()) %>%
-  save_relation(ctx)
+# handle filenames
