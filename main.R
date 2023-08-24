@@ -12,6 +12,7 @@ source("./utils.R")
 ctx = tercenCtx()
 input.par <- get_settings(ctx)
 
+
 default_color <- "#36454f"
 
 ds <- get_data_step(ctx)

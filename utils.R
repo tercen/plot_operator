@@ -281,6 +281,13 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   }
   
   #####
+  ### Axes ranges
+  x_range <- as.numeric(trimws(strsplit(input.par$x_range, ",")[[1]]))
+  y_range <- as.numeric(trimws(strsplit(input.par$y_range, ",")[[1]]))
+  if(length(x_range) > 0) plt <- plt + xlim(x_range)
+  if(length(y_range) > 0) plt <- plt + ylim(y_range)
+  
+  #####
   ### Facets based on rows and columns
   if(!any(chart_types == "ChartHeatmap")) {
     plt <- plt + get_facet_formula(ctx, input.par$wrap.1d, input.par$scales)

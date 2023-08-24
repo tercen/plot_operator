@@ -37,6 +37,18 @@
   },
   {
     "kind": "StringProperty",
+    "name": "x_range",
+    "defaultValue": "",
+    "description": "X axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10')"
+  },
+  {
+    "kind": "StringProperty",
+    "name": "y_range",
+    "defaultValue": "",
+    "description": "Y axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10')"
+  },
+  {
+    "kind": "StringProperty",
     "name": "xlab",
     "defaultValue": "",
     "description": "X axis label."
