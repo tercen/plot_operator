@@ -12,6 +12,8 @@ source("./utils.R")
 
 ctx = tercenCtx()
 input.par <- get_settings(ctx)
+input.par$plot.width <- as.numeric(input.par$plot.width)
+input.par$plot.height <- as.numeric(input.par$plot.height)
 
 default_color <- "#36454f"
 

@@ -39,13 +39,13 @@
     "kind": "StringProperty",
     "name": "x_range",
     "defaultValue": "",
-    "description": "X axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10')"
+    "description": "X axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10'). One of the two values can be set to NA to use the lower or upper limit of the data."
   },
   {
     "kind": "StringProperty",
     "name": "y_range",
     "defaultValue": "",
-    "description": "Y axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10')"
+    "description": "Y axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10'). One of the two values can be set to NA to use the lower or upper limit of the data."
   },
   {
     "kind": "StringProperty",
@@ -115,6 +115,12 @@
       "free_y"
     ],
     "description": "Scales mode (from ggplot2)."
+  },
+  {
+    "kind": "BooleanProperty",
+    "name": "rotate_x_axis",
+    "defaultValue": false,
+    "description": "Rotates the x axis labels by a 90 degrees angle."
   },
   {
     "kind": "BooleanProperty",

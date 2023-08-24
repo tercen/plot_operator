@@ -298,6 +298,8 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
     ylab <- get_axis_labels(ctx, input.par$ylab, "col")
   }
   
+  if(input.par$rotate_x_axis) plt <- plt + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  
   #####
   ## Set theme
   plt <- plt + 
