@@ -1,5 +1,6 @@
 suppressPackageStartupMessages({
   library(tercen)
+  library(tercenApi)
   library(dplyr)
   library(ggplot2)
   library(tim)
@@ -11,7 +12,6 @@ source("./utils.R")
 
 ctx = tercenCtx()
 input.par <- get_settings(ctx)
-
 
 default_color <- "#36454f"
 

@@ -106,13 +106,13 @@ get_settings <- function(ctx) {
   props <- jsonlite::read_json("operator.json")$properties
   
   input.par <- lapply(props, function(x) {
-    switch (x$kind,
+    kind <- switch (x$kind,
             "StringProperty" = as.character,
             "EnumeratedProperty" = as.character,
             "BooleanProperty" = as.logical,
             "DoubleProperty" = as.double
     )
-    ctx$op.value(x$name, x$kind, x$defaultValue) 
+    ctx$op.value(x$name, kind, x$defaultValue) 
   })
   names(input.par) <- lapply(props, "[[", "name")
   
