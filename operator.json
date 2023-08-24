@@ -115,6 +115,12 @@
     "name": "flip",
     "defaultValue": false,
     "description": "Whether to flip x and y axes."
+  },
+  {
+    "kind": "BooleanProperty",
+    "name": "split_cells",
+    "defaultValue": false,
+    "description": "Whether to produce one plot per cell or not. Plots will be output as a zip file."
   }
   ]
 }

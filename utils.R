@@ -102,27 +102,20 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
 ### Operator settings
 
 get_settings <- function(ctx) {
-  input.par <- list(
-    plot.type    = ctx$op.value("plot_type", type = as.character, default = "png"),
-    plot.width   = ctx$op.value("plot.width", type = as.double, default = ""),
-    plot.height  = ctx$op.value("plot.height", type = as.double, default = ""),
-    xlab         = ctx$op.value("xlab", type = as.character, default = ""),
-    ylab         = ctx$op.value("ylab", type = as.character, default = ""),
-    title        = ctx$op.value("title", type = as.character, default = ""),
-    subtitle     = ctx$op.value("subtitle", type = as.character, default = ""),
-    caption      = ctx$op.value("caption", type = as.character, default = ""),
-    theme        = ctx$op.value("theme", type = as.character, default = "light"),
-    base.size    = ctx$op.value("base.size", type = as.double, default = 11),
-    dot.size     = ctx$op.value("dot.size", type = as.double, default = 0.5),
-    bar.position = ctx$op.value("bar.position", type = as.character, default = "dodge"),
-    bar.width    = ctx$op.value("bar.width", type = as.double, default = 0.25),
-    dodge.width  = ctx$op.value("dodge.width", type = as.double, default = 1.1),
-    jitter.width = ctx$op.value("jitter.width", type = as.double, default = 0.05),
-    color.palette= ctx$op.value("color.palette", type = as.character, default = "crosstab"),
-    scales       = ctx$op.value("scales", type = as.character, default = "fixed"),
-    wrap.1d      = ctx$op.value("wrap.1d", type = as.logical, default = TRUE),
-    flip      = ctx$op.value("flip", type = as.logical, default = FALSE)
-  )
+  
+  props <- jsonlite::read_json("operator.json")$properties
+  
+  input.par <- lapply(props, function(x) {
+    switch (x$kind,
+            "StringProperty" = as.character,
+            "EnumeratedProperty" = as.character,
+            "BooleanProperty" = as.logical,
+            "DoubleProperty" = as.double
+    )
+    ctx$op.value(x$name, x$kind, x$defaultValue) 
+  })
+  names(input.par) <- lapply(props, "[[", "name")
+  
   return(input.par)
 }
 
@@ -318,8 +311,8 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   
   #####
   ## Save plot file
-  if(input.par$plot.type ==  "svg2") {
-    input.par$plot.type <- "svg"
+  if(input.par$plot_type ==  "svg2") {
+    input.par$plot_type <- "svg"
     device <- svg
   } else {
     device <- NULL
@@ -327,7 +320,7 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   
   plt_files <- tim::save_plot(
     plt,
-    type = input.par$plot.type,
+    type = input.par$plot_type,
     width = input.par$plot.width / 144,
     height = input.par$plot.height / 144,
     units = "in",
