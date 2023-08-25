@@ -200,7 +200,7 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   } else if(all(chart_types %in% c("ChartPoint", "ChartLine", "ChartBar"))) {
     
     ncells <- ctx$cschema$nRows * ctx$rschema$nRows
-    if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
+    # if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
     
     col_factors <- unique(unlist(ctx$colors))
     if(!is.null(col_factors)) col_factors <- paste0("`", col_factors, "`")
