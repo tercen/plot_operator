@@ -270,16 +270,32 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   
   # Add colors
   palette_kind <- class(pl[[1]]$palette)[1]
+  brks <- lapply(pl[[1]]$palette$doubleColorElements, "[[", "stringValue") %>% 
+    unlist() %>% 
+    as.double()
+  
   if(palette_kind == "CategoryPalette") {
     plt <- plt + 
       scale_colour_manual(values = tercen_palette(pl, n = 32)) + 
       scale_fill_manual(values = tercen_palette(pl, n = 32))
   } else {
-    plt <- plt + 
-      scale_color_gradientn(colours = tercen_palette(pl, n = 32)) +
-      scale_fill_gradientn(colours = tercen_palette(pl, n = 32))
+    
+    if(length(brks) != 3) {
+      plt <- plt + 
+        scale_color_gradientn(colours = tercen_palette(pl, n = 32), breaks = brks, limits = range(brks), 
+                              oob = scales::squish) +
+        scale_fill_gradientn(colours = tercen_palette(pl, n = 32), breaks = brks, limits = range(brks),
+                             oob = scales::squish)
+    } else {
+      pal <- unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>% int_to_rgb()
+      plt <- plt + 
+        scale_color_gradient2(low = pal[1], mid = pal[2], high = pal[3], midpoint = brks[2], limits = range(brks), 
+                              oob = scales::squish) +
+        scale_fill_gradient2(low = pal[1], mid = pal[2], high = pal[3], midpoint = brks[2], limits = range(brks), 
+                              oob = scales::squish)
+    }
   }
-  
+
   #####
   ### Axes ranges
   x_range <- as.numeric(trimws(strsplit(input.par$x_range, ",")[[1]]))
