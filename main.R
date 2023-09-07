@@ -23,12 +23,12 @@ pl <- get_palettes(ds)
 
 n_cells <- ctx$cschema$nRows * ctx$rschema$nRows
 
-if(n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
-
 chart_types <- get_chart_types(ds)
 hm <- any(chart_types == "ChartHeatmap")
 
 if(!hm & (n_cells > 25 | input.par$split_cells)) {
+  
+  if(n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
   
   df <- df %>% group_by(.ci, .ri)
   
