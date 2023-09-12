@@ -178,7 +178,6 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   
   ctx$log(message = paste0("Generating charts: ", paste0(chart_types, collapse = " + ")))
   
-  
   # stop if different colors in layers
   if(length(ctx$colors) > 0 && !any(unlist(lapply(ctx$colors, identical, ctx$colors[[1]])))) {
     stop("The same color factors must be used across layers.")
@@ -193,10 +192,23 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
     layer <- which(chart_types == "ChartHeatmap")[1] - 1L
     df_plot <- df %>% filter(.axisIndex == layer)
     
-    plt <- ggplot(df_plot, aes_string(x = ".ci", y = ".ri", fill = unlist(ctx$colors))) +
-      geom_tile() +
-      scale_y_reverse()
+    x_labels <- ctx$cselect() %>% 
+      tidyr::unite("x_label") %>% 
+      mutate(.ci = seq_len(nrow(.)) - 1L)
+    y_labels <- ctx$rselect() %>%
+      tidyr::unite("y_label") %>% 
+      mutate(.ri = seq_len(nrow(.)) - 1L)
+    df_plot <- df_plot %>% 
+      left_join(x_labels, by = ".ci") %>%
+      left_join(y_labels, by = ".ri")
     
+    plt <- ggplot(df_plot, aes_string(x = "x_label", y = "y_label", fill = unlist(ctx$colors))) +
+      geom_tile() +
+      scale_y_discrete(limits = rev)
+    
+    if(input.par$heatmap_annotation %in% c("rows", "none")) plt <- plt + scale_x_discrete(labels = NULL)
+    if(input.par$heatmap_annotation %in% c("columns", "none")) plt <- plt + scale_y_discrete(limits = rev, labels = NULL)
+
   } else if(all(chart_types %in% c("ChartPoint", "ChartLine", "ChartBar"))) {
     
     ncells <- ctx$cschema$nRows * ctx$rschema$nRows

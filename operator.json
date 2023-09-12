@@ -139,7 +139,20 @@
     "name": "split_cells",
     "defaultValue": false,
     "description": "Whether to produce one plot per cell or not. Plots will be output as a zip file."
+  },
+  {
+    "kind": "EnumeratedProperty",
+    "name": "heatmap_annotation",
+    "defaultValue": "none",
+    "values": [
+      "none",
+      "rows",
+      "columns",
+      "both"
+    ],
+    "description": "Add axes labels on a heatmap based on row and columns factors."
   }
+  
   ]
 }
 
