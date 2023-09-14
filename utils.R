@@ -81,7 +81,8 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
         "+",
         paste(cnames, collapse = "+")
       )),
-      scales = scales_mode
+      scales = scales_mode,
+      switch = "y"
     )
   } else {
     facet <- facet_grid(
@@ -90,7 +91,8 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
         "~",
         paste(cnames, collapse = "+")
       )),
-      scales = scales_mode
+      scales = scales_mode,
+      switch = "y"
     )
   }
   
@@ -330,15 +332,17 @@ generate_plot <- function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
   
   #####
   ## Set theme
+  # has_fill <- "fill" %in% names(plt$mapping)
+  # has_color <- "color" %in% names(plt$mapping)
   plt <- plt + 
     labs(
       title = input.par$title,
       subtitle = input.par$subtitle,
       caption = input.par$caption,
       x = xlab,
-      y = ylab,
-      color = "Legend",
-      fill = "Legend"
+      y = ylab#,
+      # fill = input.par$legend.title,
+      # color = input.par$legend.title
     )
   
   th <- get(paste0("theme_", input.par$theme))
