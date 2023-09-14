@@ -41,10 +41,16 @@ get_palettes <- function(ds) {
   palettes <- lapply(ds$model$axis$xyAxis, "[[", "colors")
   palettes
 }
+
 get_chart_types <- function(ds) {
   charts <- lapply(ds$model$axis$xyAxis, "[[", "chart")
   chart_types <- unlist(lapply(charts, function(x)
     class(x)[1]))
+  chart_names <- unlist(lapply(charts, "[[", "name"))
+  
+  chart_types[chart_names == "h-grid"] <- "ChartHLine"
+  chart_types[chart_names == "v-grid"] <- "ChartVLine"
+
   chart_types
 }
 
@@ -251,13 +257,19 @@ generate_plot <-
       if (input.par$heatmap_annotation %in% c("columns", "none"))
         plt <- plt + scale_y_discrete(limits = rev, labels = NULL)
       
-    } else if (all(chart_types %in% c("ChartPoint", "ChartLine", "ChartBar"))) {
+    } else if (all(chart_types %in% c("ChartPoint", "ChartLine", "ChartHLine", "ChartVLine", "ChartBar"))) {
       ncells <- ctx$cschema$nRows * ctx$rschema$nRows
       # if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
       
       col_factors <- unique(unlist(ctx$colors))
-      if (!is.null(col_factors))
-        col_factors <- paste0("`", col_factors, "`")
+      if (!is.null(col_factors)) {
+        if(length(col_factors) == 1) {
+          col_factors <- paste0("`", col_factors, "`")
+        }
+        else {
+          col_factors <- paste0("interaction(", paste0("`", col_factors, "`", collapse = ","), ", lex.order = TRUE)")
+        }
+      }
       
       plt <- ggplot(
         mapping = aes_string(
@@ -292,6 +304,20 @@ generate_plot <-
           plt <- plt + geom_line(
             data = df_plot,
             mapping = aes_string(color = col_factors),
+            size = 1
+          )
+        }
+        if (type == "ChartHLine") {
+          plt <- plt + geom_hline(
+            data = df_plot,
+            mapping = aes_string(yintercept = ".y", color = col_factors),
+            size = 1
+          )
+        }
+        if (type == "ChartVLine") {
+          plt <- plt + geom_vline(
+            data = df_plot,
+            mapping = aes_string(xintercept = ".y", color = col_factors),
             size = 1
           )
         }
