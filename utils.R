@@ -406,18 +406,19 @@ generate_plot <-
     
     #####
     ## Set theme
-    # has_fill <- "fill" %in% names(plt$mapping)
-    # has_color <- "color" %in% names(plt$mapping)
     plt <- plt +
       labs(
         title = input.par$title,
         subtitle = input.par$subtitle,
         caption = input.par$caption,
         x = xlab,
-        y = ylab#,
-        # fill = input.par$legend.title,
-        # color = input.par$legend.title
+        y = ylab
       )
+    
+    if(input.par$legend.title != "") {
+      if(!is.null(plt$labels$fill)) plt$labels$fill <- input.par$legend.title 
+      if(!is.null(plt$labels$color)) plt$labels$color <- input.par$legend.title 
+    }
     
     th <- get(paste0("theme_", input.par$theme))
     theme_set(th(base_size = input.par$base.size))

@@ -78,6 +78,12 @@
     "description": "Plot caption."
   },
   {
+    "kind": "StringProperty",
+    "name": "legend.title",
+    "defaultValue": "",
+    "description": "Color legend title. If left blank, the name of the color factors will be used."
+  },
+  {
     "kind": "EnumeratedProperty",
     "name": "bar.position",
     "defaultValue": "dodge",
