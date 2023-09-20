@@ -54,6 +54,15 @@ get_chart_types <- function(ds) {
   chart_types
 }
 
+get_sizes <- function(ds, size_scale_factor = 4) {
+  charts <- lapply(ds$model$axis$xyAxis, "[[", "chart")
+  chart_sizes <- (lapply(charts, "[[", "pointSize"))
+  idx <- unlist(lapply(chart_sizes, is.null))
+  chart_sizes[idx] <- size_scale_factor
+  chart_sizes <- unlist(chart_sizes)
+  chart_sizes
+}
+
 tercen_palette <- function(palette_list, n = 32) {
   palette_kind <- class(palette_list[[1]]$palette)[1]
   if (palette_kind == "JetPalette") {
@@ -154,8 +163,11 @@ getValues <- function(ctx) {
   
   if (length(ctx$colors))
     data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$colors)))
-  if (length(ctx$labels))
-    data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$labels)))
+  if (length(ctx$labels)) {
+    text_labels <- ctx$select(unique(ctx$labels)) %>%
+      tidyr::unite(col = "text_labels", sep = " - ")
+    data <- data %>% dplyr::bind_cols(text_labels)
+  }
   if (length(ctx$errors)) {
     data$.error <- select(ctx, .error)[[".error"]]
     data$.ymin <- data$.y - data$.error
@@ -193,8 +205,9 @@ get_axis_labels <- function(ctx, lab, type) {
 
 
 generate_plot <-
-  function(ctx, df, pl, input.par, ds, multipanel = TRUE) {
+  function(ctx, df, pl, input.par, ds, multipanel = TRUE, size_scale_factor = 4) {
     chart_types <- get_chart_types(ds)
+    chart_sizes <- get_sizes(ds)
     
     ### Default width and height
     if (input.par$plot.width == "" | is.na(input.par$plot.width)) {
@@ -296,29 +309,29 @@ generate_plot <-
           plt <- plt + geom_point(
             data = df_plot,
             shape = 21,
-            size = 2 * 1,
-            stroke = 0.1
+            size = 2 * chart_sizes[j] / size_scale_factor,
+            stroke = 0.
           )
         }
         if (type == "ChartLine") {
           plt <- plt + geom_line(
             data = df_plot,
             mapping = aes_string(color = col_factors),
-            size = 1
+            size = chart_sizes[j] / size_scale_factor
           )
         }
         if (type == "ChartHLine") {
           plt <- plt + geom_hline(
             data = df_plot,
             mapping = aes_string(yintercept = ".y", color = col_factors),
-            size = 1
+            size = chart_sizes[j] / size_scale_factor
           )
         }
         if (type == "ChartVLine") {
           plt <- plt + geom_vline(
             data = df_plot,
             mapping = aes_string(xintercept = ".y", color = col_factors),
-            size = 1
+            size = chart_sizes[j] / size_scale_factor
           )
         }
         if (type == "ChartBar") {
@@ -326,7 +339,7 @@ generate_plot <-
             data = df_plot,
             position = pos,
             stat = "identity",
-            size = 0.5 * 1,
+            size = 0.5 * chart_sizes[j] / size_scale_factor,
             width = 0.5,
             color = default_color
           )
@@ -342,6 +355,20 @@ generate_plot <-
               width = 0.2,
               color = default_color
             )
+        }
+        
+        # Text labels
+        if ("text_labels" %in% colnames(df)) {
+          df_plot2 <- df_plot %>% filter(text_labels != "")
+          if(nrow(df_plot2) > 0) {
+            plt <- plt +
+              geom_text(
+                data = df_plot2,
+                aes(label = text_labels),
+                size = chart_sizes[j] / size_scale_factor,
+                show.legend = FALSE
+              )
+          }
         }
       }
       

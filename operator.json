@@ -157,6 +157,12 @@
       "both"
     ],
     "description": "Add axes labels on a heatmap based on row and columns factors."
+  },
+  {
+    "kind": "StringProperty",
+    "name": "default.color",
+    "defaultValue": "#36454f",
+    "description": "Default color used for standard elements."
   }
   
   ]

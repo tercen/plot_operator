@@ -15,7 +15,7 @@ input.par <- get_settings(ctx)
 input.par$plot.width <- as.numeric(input.par$plot.width)
 input.par$plot.height <- as.numeric(input.par$plot.height)
 
-default_color <- "#36454f"
+default_color <- input.par$default.color
 
 ds <- get_data_step(ctx)
 df <- getValues(ctx)
