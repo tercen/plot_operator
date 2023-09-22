@@ -147,6 +147,12 @@
     "description": "Whether to produce one plot per cell or not. Plots will be output as a zip file."
   },
   {
+    "kind": "DoubleProperty",
+    "name": "n_cells_max",
+    "defaultValue": 50,
+    "description": "Maximum number of cell to consider for a single plot. Above this threshold, split_cells setting will be set to true."
+  },
+  {
     "kind": "EnumeratedProperty",
     "name": "heatmap_annotation",
     "defaultValue": "none",

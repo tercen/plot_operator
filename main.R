@@ -26,7 +26,7 @@ n_cells <- ctx$cschema$nRows * ctx$rschema$nRows
 chart_types <- get_chart_types(ds)
 hm <- any(chart_types == "ChartHeatmap")
 
-if(!hm & (n_cells > 25 | input.par$split_cells)) {
+if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
   
   if(n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
   
@@ -35,7 +35,7 @@ if(!hm & (n_cells > 25 | input.par$split_cells)) {
   plt_names <- df %>% 
     group_data %>% 
     select(-.rows) %>% 
-    tidyr::unite("label")
+    tidyr::unite("label", sep = "_r")
   
   plt_files <- df %>%
     group_map(~ generate_plot(ctx, ., pl, input.par, ds, multipanel = FALSE)) %>%
@@ -43,7 +43,7 @@ if(!hm & (n_cells > 25 | input.par$split_cells)) {
   
   new_names <- paste0(
     dirname(plt_files)[1],
-    "/Tercen_Plot_",
+    "/Tercen_Plot_c",
     plt_names$label,
     ".", tools::file_ext(plt_files)
   )
@@ -55,8 +55,8 @@ if(!hm & (n_cells > 25 | input.par$split_cells)) {
   on.exit(unlink(zip_file))
   
   zip::zipr(zipfile = zip_file, files = new_names)
-  
-  first_plots <- lapply(new_names[1:5][!is.na(new_names[1:5])], tim::plot_file_to_df) %>%
+  max_plots <- 10
+  first_plots <- lapply(new_names[1:max_plots][!is.na(new_names[1:max_plots])], tim::plot_file_to_df) %>%
     bind_rows()
   
   tim::plot_file_to_df(zip_file) %>%

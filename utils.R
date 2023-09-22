@@ -87,7 +87,11 @@ tercen_palette <- function(palette_list, n = 32) {
     palette.colors <- pal(n)
   }  else if (palette_kind == "CategoryPalette") {
     pal_name <- palette_list[[1]]$palette$colorList$name
-    if (pal_name == "") {
+    if (pal_name %in% c("", "Palette-1")) {
+      palette.colors <- int_to_rgb(COLOR_LIST_1)
+    } else if (pal_name %in% c("Palette-2")) {
+      palette.colors <- int_to_rgb(COLOR_LIST_2)
+    } else {
       palette.colors <- int_to_rgb(COLOR_LIST_1)
     }
   } else {
@@ -217,7 +221,7 @@ generate_plot <-
           ds$model$columnTable$cellSize * ctx$cschema$nRows,
           ds$model$columnTable$cellSize
         )
-      input.par$plot.width <- round(100 + 1.25 * N)
+      input.par$plot.width <- round(250 + 1.50 * N)
     }
     if (input.par$plot.height == "" | is.na(input.par$plot.height)) {
       N <-
@@ -226,7 +230,7 @@ generate_plot <-
           ds$model$rowTable$cellSize * ctx$rschema$nRows,
           ds$model$rowTable$cellSize
         )
-      input.par$plot.height <- round(1.25 * N)
+      input.par$plot.height <- round(150 + 1.25 * N)
     }
     
     ctx$log(message = paste0("Generating charts: ", paste0(chart_types, collapse = " + ")))
