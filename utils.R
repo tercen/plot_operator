@@ -389,12 +389,23 @@ generate_plot <-
       as.double()
     
     if (palette_kind == "CategoryPalette") {
+      
+      cat_pal <- tercen_palette(pl, n = 32)
+      n_color_levels <- df_plot %>% 
+        select(all_of(unique(unlist(ctx$colors)))) %>% 
+        unique() %>% 
+        nrow()
+      
+      if(length(cat_pal) < n_color_levels) {
+        cat_pal <- rep(cat_pal, 1L + n_color_levels %/% length(cat_pal))
+      }
+      
       plt <- plt +
         scale_colour_manual(
-          values = tercen_palette(pl, n = 32)
+          values = cat_pal
         ) +
         scale_fill_manual(
-          values = tercen_palette(pl, n = 32)
+          values = cat_pal
         )
     } else {
       if (length(brks) != 3) {
