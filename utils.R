@@ -286,6 +286,8 @@ generate_plot <-
         else {
           col_factors <- paste0("interaction(", paste0("`", col_factors, "`", collapse = ","), ", lex.order = TRUE)")
         }
+      } else {
+        col_factors <- "color"
       }
       
       plt <- ggplot(
@@ -308,6 +310,8 @@ generate_plot <-
       for (j in seq_along(chart_types)) {
         type <- chart_types[j]
         df_plot <- df %>% filter(.axisIndex == j - 1L)
+        
+        df_plot$color <- ctx$yAxis[[j]]
         
         if (type == "ChartPoint") {
           plt <- plt + geom_point(
@@ -388,60 +392,62 @@ generate_plot <-
       unlist() %>%
       as.double()
     
-    if (palette_kind == "CategoryPalette") {
-      
-      cat_pal <- tercen_palette(pl, n = 32)
-      n_color_levels <- df_plot %>% 
-        select(all_of(unique(unlist(ctx$colors)))) %>% 
-        unique() %>% 
-        nrow()
-      
-      if(length(cat_pal) < n_color_levels) {
-        cat_pal <- rep(cat_pal, 1L + n_color_levels %/% length(cat_pal))
-      }
-      
-      plt <- plt +
-        scale_colour_manual(
-          values = cat_pal
-        ) +
-        scale_fill_manual(
-          values = cat_pal
-        )
-    } else {
-      if (length(brks) != 3) {
+    if(length(ctx$colors) != 0) {
+      if (palette_kind == "CategoryPalette") {
+        
+        cat_pal <- tercen_palette(pl, n = 32)
+        n_color_levels <- df_plot %>% 
+          select(all_of(unique(unlist(ctx$colors)))) %>% 
+          unique() %>% 
+          nrow()
+        
+        if(length(cat_pal) < n_color_levels) {
+          cat_pal <- rep(cat_pal, 1L + n_color_levels %/% length(cat_pal))
+        }
+        
         plt <- plt +
-          scale_color_gradientn(
-            colours = tercen_palette(pl, n = 32),
-            breaks = brks,
-            limits = range(brks),
-            oob = scales::squish
+          scale_colour_manual(
+            values = cat_pal
           ) +
-          scale_fill_gradientn(
-            colours = tercen_palette(pl, n = 32),
-            breaks = brks,
-            limits = range(brks),
-            oob = scales::squish
+          scale_fill_manual(
+            values = cat_pal
           )
       } else {
-        pal <-
-          unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>% int_to_rgb()
-        plt <- plt +
-          scale_color_gradient2(
-            low = pal[1],
-            mid = pal[2],
-            high = pal[3],
-            midpoint = brks[2],
-            limits = range(brks),
-            oob = scales::squish
-          ) +
-          scale_fill_gradient2(
-            low = pal[1],
-            mid = pal[2],
-            high = pal[3],
-            midpoint = brks[2],
-            limits = range(brks),
-            oob = scales::squish
-          )
+        if (length(brks) != 3) {
+          plt <- plt +
+            scale_color_gradientn(
+              colours = tercen_palette(pl, n = 32),
+              breaks = brks,
+              limits = range(brks),
+              oob = scales::squish
+            ) +
+            scale_fill_gradientn(
+              colours = tercen_palette(pl, n = 32),
+              breaks = brks,
+              limits = range(brks),
+              oob = scales::squish
+            )
+        } else {
+          pal <-
+            unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>% int_to_rgb()
+          plt <- plt +
+            scale_color_gradient2(
+              low = pal[1],
+              mid = pal[2],
+              high = pal[3],
+              midpoint = brks[2],
+              limits = range(brks),
+              oob = scales::squish
+            ) +
+            scale_fill_gradient2(
+              low = pal[1],
+              mid = pal[2],
+              high = pal[3],
+              midpoint = brks[2],
+              limits = range(brks),
+              oob = scales::squish
+            )
+        }
       }
     }
     
