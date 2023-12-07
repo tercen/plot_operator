@@ -287,6 +287,7 @@ generate_plot <-
         }
       } else {
         col_factors <- "color"
+        col_factors_raw <- "color"
       }
       
       plt <- ggplot(
@@ -396,7 +397,7 @@ generate_plot <-
       if (palette_kind == "CategoryPalette") {
         
         cat_pal <- tercen_palette(pl, n = 32)
-        n_color_levels <- df_plot %>% 
+        n_color_levels <- df %>% 
           select(all_of(col_factors_raw)) %>% 
           unique() %>% 
           nrow()
