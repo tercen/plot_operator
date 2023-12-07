@@ -56,10 +56,10 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
   
   zip::zipr(zipfile = zip_file, files = new_names)
   max_plots <- 10
-  first_plots <- lapply(new_names[1:max_plots][!is.na(new_names[1:max_plots])], tim::plot_file_to_df) %>%
+  first_plots <- lapply(new_names[1:max_plots][!is.na(new_names[1:max_plots])], tercen::file_to_tercen) %>%
     bind_rows()
   
-  tim::plot_file_to_df(zip_file) %>%
+  tercen::file_to_tercen(zip_file) %>%
     bind_rows(first_plots) %>%
     select(-checksum) %>%
     as_relation() %>%
@@ -71,8 +71,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
   plt_files <- generate_plot(ctx, df, pl, input.par, ds)
   on.exit(unlink(plt_files))
   
-  tim::plot_file_to_df(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
-    select(-checksum) %>%
+  tercen::file_to_tercen(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
     save_relation(ctx)

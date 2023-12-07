@@ -392,12 +392,12 @@ generate_plot <-
       unlist() %>%
       as.double()
     
-    if(length(ctx$colors) != 0) {
+    # if(length(ctx$colors) != 0) {
       if (palette_kind == "CategoryPalette") {
         
         cat_pal <- tercen_palette(pl, n = 32)
         n_color_levels <- df_plot %>% 
-          select(all_of(unique(unlist(ctx$colors)))) %>% 
+          select(all_of(col_factors)) %>% 
           unique() %>% 
           nrow()
         
@@ -449,7 +449,7 @@ generate_plot <-
             )
         }
       }
-    }
+    # }
     
     #####
     ### Axes ranges

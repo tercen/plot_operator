@@ -140,10 +140,13 @@
     },
     "cpp11": {
       "Package": "cpp11",
-      "Version": "0.2.7",
+      "Version": "0.4.7",
       "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "730eebcc741a5c36761f7d4d0f5e37b8"
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "5a295d7d963cc5035284dcdbaf334f4e"
     },
     "crayon": {
       "Package": "crayon",
@@ -547,7 +550,7 @@
     },
     "svglite": {
       "Package": "svglite",
-      "Version": "2.1.1",
+      "Version": "2.1.2",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -555,7 +558,7 @@
         "cpp11",
         "systemfonts"
       ],
-      "Hash": "29442899581643411facb66f4add846a"
+      "Hash": "be5318f6b48c136ecd6b8b5de24cc0ae"
     },
     "sys": {
       "Package": "sys",
@@ -566,14 +569,14 @@
     },
     "systemfonts": {
       "Package": "systemfonts",
-      "Version": "1.0.4",
+      "Version": "1.0.5",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "cpp11"
       ],
-      "Hash": "90b28393209827327de889f49935140a"
+      "Hash": "15b594369e70b975ba9f064295983499"
     },
     "teRcenHttp": {
       "Package": "teRcenHttp",
@@ -584,11 +587,12 @@
     },
     "tercen": {
       "Package": "tercen",
-      "Version": "0.13.0",
+      "Version": "0.13.5",
       "Source": "Repository",
       "Repository": "TERCEN",
       "Requirements": [
         "R6",
+        "base64enc",
         "dplyr",
         "httr",
         "mtercen",
@@ -600,7 +604,7 @@
         "uuid",
         "yaml"
       ],
-      "Hash": "2b99817b3a000b5b4591b5173947a0ac"
+      "Hash": "f3e7867c738bca726adb6243b2ed45ef"
     },
     "tercenApi": {
       "Package": "tercenApi",
