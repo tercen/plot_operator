@@ -309,6 +309,7 @@ generate_plot <-
       for (j in seq_along(chart_types)) {
         type <- chart_types[j]
         df_plot <- df %>% filter(.axisIndex == j - 1L)
+        if(nrow(df_plot) > 0) {
         
         df_plot$color <- ctx$yAxis[[j]]
         
@@ -378,7 +379,7 @@ generate_plot <-
           }
         }
       }
-      
+      }
     } else {
       stop("This chart type is not supported.")
       
