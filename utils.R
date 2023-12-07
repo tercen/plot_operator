@@ -276,15 +276,14 @@ generate_plot <-
       
     } else if (all(chart_types %in% c("ChartPoint", "ChartLine", "ChartHLine", "ChartVLine", "ChartBar"))) {
       ncells <- ctx$cschema$nRows * ctx$rschema$nRows
-      # if(ncells > 25) stop("This chart can only be produced with less than 25 projected cells.")
-      
-      col_factors <- unique(unlist(ctx$colors))
-      if (!is.null(col_factors)) {
-        if(length(col_factors) == 1) {
-          col_factors <- paste0("`", col_factors, "`")
+
+      col_factors_raw <- unique(unlist(ctx$colors))
+      if (!is.null(col_factors_raw)) {
+        if(length(col_factors_raw) == 1) {
+          col_factors <- paste0("`", col_factors_raw, "`")
         }
         else {
-          col_factors <- paste0("interaction(", paste0("`", col_factors, "`", collapse = ","), ", lex.order = TRUE)")
+          col_factors <- paste0("interaction(", paste0("`", col_factors_raw, "`", collapse = ","), ", lex.order = TRUE)")
         }
       } else {
         col_factors <- "color"
@@ -397,7 +396,7 @@ generate_plot <-
         
         cat_pal <- tercen_palette(pl, n = 32)
         n_color_levels <- df_plot %>% 
-          select(all_of(col_factors)) %>% 
+          select(all_of(col_factors_raw)) %>% 
           unique() %>% 
           nrow()
         
