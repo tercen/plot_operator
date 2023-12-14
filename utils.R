@@ -397,7 +397,7 @@ generate_plot <-
       if (palette_kind == "CategoryPalette") {
         
         cat_pal <- tercen_palette(pl, n = 32)
-        n_color_levels <- df %>% 
+        n_color_levels <- df_plot %>% 
           select(all_of(col_factors_raw)) %>% 
           unique() %>% 
           nrow()
@@ -430,7 +430,8 @@ generate_plot <-
             )
         } else {
           pal <-
-            unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>% int_to_rgb()
+            unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>%
+            int_to_rgb()
           plt <- plt +
             scale_color_gradient2(
               low = pal[1],

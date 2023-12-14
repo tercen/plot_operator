@@ -61,7 +61,6 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
   
   tercen::file_to_tercen(zip_file) %>%
     bind_rows(first_plots) %>%
-    select(-checksum) %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
     save_relation(ctx)
