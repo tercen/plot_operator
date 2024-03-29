@@ -258,24 +258,6 @@ generate_plot <-
       df_plot <- df_plot %>%
         left_join(x_labels, by = ".ci") %>%
         left_join(y_labels, by = ".ri")
-      
-      plt <-
-        ggplot(df_plot,
-               aes_string(
-                 x = "x_label",
-                 y = "y_label",
-                 fill = unlist(ctx$colors)
-               )) +
-        geom_tile() +
-        scale_y_discrete(limits = rev)
-      
-      if (input.par$heatmap_annotation %in% c("rows", "none"))
-        plt <- plt + scale_x_discrete(labels = NULL)
-      if (input.par$heatmap_annotation %in% c("columns", "none"))
-        plt <- plt + scale_y_discrete(limits = rev, labels = NULL)
-      
-    } else if (all(chart_types %in% c("ChartPoint", "ChartLine", "ChartHLine", "ChartVLine", "ChartBar"))) {
-      ncells <- ctx$cschema$nRows * ctx$rschema$nRows
 
       col_factors_raw <- unique(unlist(ctx$colors))
       if (!is.null(col_factors_raw)) {
@@ -289,7 +271,25 @@ generate_plot <-
         col_factors <- "color"
         col_factors_raw <- "color"
       }
+            
+      plt <-
+        ggplot(df_plot,
+               aes_string(
+                 x = "x_label",
+                 y = "y_label",
+                 fill = col_factors
+               )) +
+        geom_tile() +
+        scale_y_discrete(limits = rev)
       
+      if (input.par$heatmap_annotation %in% c("rows", "none"))
+        plt <- plt + scale_x_discrete(labels = NULL)
+      if (input.par$heatmap_annotation %in% c("columns", "none"))
+        plt <- plt + scale_y_discrete(limits = rev, labels = NULL)
+      
+    } else if (all(chart_types %in% c("ChartPoint", "ChartLine", "ChartHLine", "ChartVLine", "ChartBar"))) {
+      ncells <- ctx$cschema$nRows * ctx$rschema$nRows
+
       plt <- ggplot(
         mapping = aes_string(
           x = ".x",
