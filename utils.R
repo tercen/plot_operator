@@ -241,6 +241,20 @@ generate_plot <-
       stop("The same color factors must be used across layers.")
     }
     
+    # Prepare color factors list
+    col_factors_raw <- unique(unlist(ctx$colors))
+    if (!is.null(col_factors_raw)) {
+      if(length(col_factors_raw) == 1) {
+        col_factors <- paste0("`", col_factors_raw, "`")
+      } else {
+        col_factors <- paste0("interaction(", paste0("`", col_factors_raw, "`", collapse = ","), ", lex.order = TRUE)")
+      }
+    } else {
+      col_factors <- "color"
+      col_factors_raw <- "color"
+    }
+    
+    
     # Initialise chart
     if (any(chart_types == "ChartHeatmap")) {
       if (length(chart_types) > 1) {
@@ -259,18 +273,7 @@ generate_plot <-
         left_join(x_labels, by = ".ci") %>%
         left_join(y_labels, by = ".ri")
 
-      col_factors_raw <- unique(unlist(ctx$colors))
-      if (!is.null(col_factors_raw)) {
-        if(length(col_factors_raw) == 1) {
-          col_factors <- paste0("`", col_factors_raw, "`")
-        }
-        else {
-          col_factors <- paste0("interaction(", paste0("`", col_factors_raw, "`", collapse = ","), ", lex.order = TRUE)")
-        }
-      } else {
-        col_factors <- "color"
-        col_factors_raw <- "color"
-      }
+
             
       plt <-
         ggplot(df_plot,
