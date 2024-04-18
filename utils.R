@@ -243,7 +243,9 @@ generate_plot <-
     
     # Prepare color factors list
     col_factors_raw <- unique(unlist(ctx$colors))
+    specified_colors <- FALSE
     if (!is.null(col_factors_raw)) {
+      specified_colors <- TRUE
       if(length(col_factors_raw) == 1) {
         col_factors <- paste0("`", col_factors_raw, "`")
       } else {
@@ -315,7 +317,7 @@ generate_plot <-
         df_plot <- df %>% filter(.axisIndex == j - 1L)
         if(nrow(df_plot) > 0) {
         
-        df_plot$color <- ctx$yAxis[[j]]
+          if(!specified_colors) df_plot$color <- ctx$yAxis[[j]]
         
         if (type == "ChartPoint") {
           plt <- plt + geom_point(
