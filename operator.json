@@ -182,6 +182,16 @@
         "metaFactors": [
           {
             "kind": "MetaFactor",
+            "name": "page",
+            "type": "",
+            "description": "",
+            "ontologyMapping": "page",
+            "crosstabMapping": "row",
+            "cardinality": "",
+            "factors": []
+          },
+          {
+            "kind": "MetaFactor",
             "name": "sample",
             "type": "",
             "description": "",
