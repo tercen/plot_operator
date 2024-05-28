@@ -160,8 +160,12 @@ get_settings <- function(ctx) {
 #####
 ### Data preprocessing
 
-getValues <- function(ctx) {
-  data <- ctx %>% select(.y, .ri, .ci, .axisIndex)
+getValues <- function(ctx, is_2d_histogram = FALSE) {
+  if(is_2d_histogram) {
+    data <- ctx %>% select(.y, .ri, .ci, .axisIndex, .x_bin_size, .y_bin_size, .histogram_count)
+  } else {
+    data <- ctx %>% select(.y, .ri, .ci, .axisIndex)
+  }
   if (ctx$hasXAxis)
     data$.x <- select(ctx, .x)[[".x"]]
   
@@ -209,8 +213,7 @@ get_axis_labels <- function(ctx, lab, type) {
 
 
 generate_plot <-
-  function(ctx, df, pl, input.par, ds, multipanel = TRUE, size_scale_factor = 4) {
-    chart_types <- get_chart_types(ds)
+  function(ctx, df, pl, input.par, ds, chart_types, multipanel = TRUE, size_scale_factor = 4) {
     chart_sizes <- get_sizes(ds)
     
     ### Default width and height
@@ -292,9 +295,11 @@ generate_plot <-
       if (input.par$heatmap_annotation %in% c("columns", "none"))
         plt <- plt + scale_y_discrete(limits = rev, labels = NULL)
       
-    } else if (all(chart_types %in% c("ChartPoint", "ChartLine", "ChartHLine", "ChartVLine", "ChartBar"))) {
+    } else if (all(chart_types %in% c("2D_Histogram", "ChartPoint", "ChartLine", "ChartHLine", "ChartVLine", "ChartBar"))) {
       ncells <- ctx$cschema$nRows * ctx$rschema$nRows
-
+      
+      if(all(chart_types %in% c("2D_Histogram"))) col_factors <- ".histogram_count"
+      
       plt <- ggplot(
         mapping = aes_string(
           x = ".x",
@@ -358,7 +363,19 @@ generate_plot <-
             color = default_color
           )
         }
-        
+        if (type == "2D_Histogram") {
+          plt <- plt + geom_rect(
+            data = df_plot,
+            aes(
+              xmin = .x - .x_bin_size / 2,
+              xmax = .x + .x_bin_size / 2,
+              ymin = .y - .y_bin_size / 2,
+              ymax = .y + .y_bin_size / 2,
+              fill = .histogram_count
+            )
+          )
+        }
+
         # Error bars
         if (".error" %in% colnames(df)) {
           plt <- plt +

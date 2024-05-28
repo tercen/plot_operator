@@ -17,14 +17,21 @@ input.par$plot.height <- as.numeric(input.par$plot.height)
 
 default_color <- input.par$default.color
 
+is_2d_histogram <- lapply(ctx$schema$columns, "[[", "name") %>%
+  unlist() %>%
+  `%in%`(c(".histogram_count", ".x_bin_size", ".y_bin_size"), .) %>%
+  all()
+
 ds <- get_data_step(ctx)
-df <- getValues(ctx)
+df <- getValues(ctx, is_2d_histogram)
 pl <- get_palettes(ds)
 
 n_cells <- ctx$cschema$nRows * ctx$rschema$nRows
 
 chart_types <- get_chart_types(ds)
 hm <- any(chart_types == "ChartHeatmap")
+
+if(is_2d_histogram) chart_types <- "2D_Histogram"
 
 if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
   
@@ -38,7 +45,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
     tidyr::unite("label", sep = "_r")
   
   plt_files <- df %>%
-    group_map(~ generate_plot(ctx, ., pl, input.par, ds, multipanel = FALSE)) %>%
+    group_map(~ generate_plot(ctx, ., pl, input.par, ds, chart_types = chart_types, multipanel = FALSE)) %>%
     unlist
   
   new_names <- paste0(
@@ -67,7 +74,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
   
 } else {
   
-  plt_files <- generate_plot(ctx, df, pl, input.par, ds)
+  plt_files <- generate_plot(ctx, df, pl, input.par, ds, chart_types = chart_types)
   on.exit(unlink(plt_files))
   
   tercen::file_to_tercen(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
