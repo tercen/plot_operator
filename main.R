@@ -4,7 +4,6 @@ suppressPackageStartupMessages({
   library(dplyr)
   library(ggplot2)
   library(tim)
-  library(svglite)
 })
 
 source("./utils_colors.R")
@@ -17,6 +16,7 @@ input.par$plot.height <- as.numeric(input.par$plot.height)
 
 default_color <- input.par$default.color
 
+## replace by ctx$query
 is_2d_histogram <- lapply(ctx$schema$columns, "[[", "name") %>%
   unlist() %>%
   `%in%`(c(".histogram_count", ".x_bin_size", ".y_bin_size"), .) %>%
@@ -26,6 +26,16 @@ ds <- get_data_step(ctx)
 df <- getValues(ctx, is_2d_histogram)
 pl <- get_palettes(ds)
 
+## Get operator specs and page factors
+specs <- ctx$query$operatorSettings$operatorRef$operatorSpec
+metafactors <- specs$inputSpecs[[1]]$metaFactors
+spec_names <- lapply(metafactors, "[[", "name")
+
+page_factors <- lapply(metafactors[grepl("page", unlist(spec_names))], "[[", "factors")[[1]]
+
+has_page <- length(page_factors) != 0
+if(has_page) page_factor_names <- lapply(page_factors, "[[", "name") %>% unlist()
+
 n_cells <- ctx$cschema$nRows * ctx$rschema$nRows
 
 chart_types <- get_chart_types(ds)
@@ -33,11 +43,15 @@ hm <- any(chart_types == "ChartHeatmap")
 
 if(is_2d_histogram) chart_types <- "2D_Histogram"
 
-if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
+if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
   
   if(n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
   
-  df <- df %>% group_by(.ci, .ri)
+  if(has_page) {
+    df <- df %>% group_by(across(page_factor_names))
+  } else {
+    df <- df %>% group_by(.ci, .ri) 
+  }
   
   plt_names <- df %>% 
     group_data %>% 
@@ -45,7 +59,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells)) {
     tidyr::unite("label", sep = "_r")
   
   plt_files <- df %>%
-    group_map(~ generate_plot(ctx, ., pl, input.par, ds, chart_types = chart_types, multipanel = FALSE)) %>%
+    group_map(~ generate_plot(ctx, ., pl, input.par, ds, chart_types = chart_types, multipanel = FALSE), .keep = TRUE) %>%
     unlist
   
   new_names <- paste0(
