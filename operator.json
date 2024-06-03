@@ -123,6 +123,16 @@
     "description": "Scales mode (from ggplot2)."
   },
   {
+    "kind": "EnumeratedProperty",
+    "name": "color_scales",
+    "defaultValue": "fixed",
+    "values": [
+      "fixed",
+      "per_plot"
+    ],
+    "description": "Scales mode (from ggplot2)."
+  },
+  {
     "kind": "BooleanProperty",
     "name": "rotate_x_axis",
     "defaultValue": false,

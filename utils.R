@@ -410,10 +410,15 @@ generate_plot <-
     
     # Add colors
     palette_kind <- class(pl[[1]]$palette)[1]
-    brks <-
-      lapply(pl[[1]]$palette$doubleColorElements, "[[", "stringValue") %>%
-      unlist() %>%
-      as.double()
+    
+    if(input.par$colors_scales == "fixed") {
+      brks <-
+        lapply(pl[[1]]$palette$doubleColorElements, "[[", "stringValue") %>%
+        unlist() %>%
+        as.double()
+    } else {
+      brks <- range(df_plot[col_factors], na.rm = TRUE)
+    }
     
     # if(length(ctx$colors) != 0) {
       if (palette_kind == "CategoryPalette") {
