@@ -411,7 +411,7 @@ generate_plot <-
     # Add colors
     palette_kind <- class(pl[[1]]$palette)[1]
     
-    if(input.par$color_scales == "fixed") {
+    if(input.par$color_scales == "fixed" | palette_kind == "CategoryPalette") {
       brks <-
         lapply(pl[[1]]$palette$doubleColorElements, "[[", "stringValue") %>%
         unlist() %>%
