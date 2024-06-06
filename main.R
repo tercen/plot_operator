@@ -6,6 +6,7 @@ suppressPackageStartupMessages({
   library(tim)
 })
 
+
 source("./utils_colors.R")
 source("./utils.R")
 
@@ -28,10 +29,18 @@ pl <- get_palettes(ds)
 
 ## Get operator specs and page factors
 specs <- ctx$query$operatorSettings$operatorRef$operatorSpec
-metafactors <- specs$inputSpecs[[1]]$metaFactors
-spec_names <- lapply(metafactors, "[[", "name")
 
-page_factors <- lapply(metafactors[grepl("page", unlist(spec_names))], "[[", "factors")[[1]]
+if(length(specs$inputSpecs)) {
+  metafactors <- specs$inputSpecs[[1]]$metaFactors
+  spec_names <- lapply(metafactors, "[[", "name")
+  page_factors <- lapply(metafactors[grepl("page", unlist(spec_names))], "[[", "factors")[[1]]
+} else {
+  metafactors <- NULL
+  spec_names <- NULL
+  page_factors <- NULL
+  
+}
+
 
 has_page <- length(page_factors) != 0
 if(has_page) page_factor_names <- lapply(page_factors, "[[", "name") %>% unlist()
