@@ -417,7 +417,10 @@ generate_plot <-
         unlist() %>%
         as.double()
     } else {
-      brks <- range(df_plot[col_factors], na.rm = TRUE)
+      brks <- df_plot %>% 
+        ungroup %>%
+        select(all_of(col_factors_raw)) %>% 
+        range(na.rm = TRUE)
     }
     
     # if(length(ctx$colors) != 0) {
