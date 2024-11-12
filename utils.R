@@ -50,7 +50,7 @@ get_chart_types <- function(ds) {
   
   chart_types[chart_names == "h-grid"] <- "ChartHLine"
   chart_types[chart_names == "v-grid"] <- "ChartVLine"
-
+  
   chart_types
 }
 
@@ -277,9 +277,10 @@ generate_plot <-
       df_plot <- df_plot %>%
         left_join(x_labels, by = ".ci") %>%
         left_join(y_labels, by = ".ri")
-
-
-            
+      
+      df_plot$x_label <- factor(df_plot$x_label, levels = x_labels$x_label)
+      df_plot$y_label <- factor(df_plot$y_label, levels = y_labels$y_label)
+      
       plt <-
         ggplot(df_plot,
                aes_string(
@@ -321,87 +322,87 @@ generate_plot <-
         type <- chart_types[j]
         df_plot <- df %>% filter(.axisIndex == j - 1L)
         if(nrow(df_plot) > 0) {
-        
+          
           if(!specified_colors) df_plot$color <- ctx$yAxis[[j]]
-        
-        if (type == "ChartPoint") {
-          plt <- plt + geom_point(
-            data = df_plot,
-            shape = 21,
-            size = 2 * chart_sizes[j] / size_scale_factor,
-            stroke = 0.
-          )
-        }
-        if (type == "ChartLine") {
-          plt <- plt + geom_line(
-            data = df_plot,
-            mapping = aes_string(color = col_factors),
-            size = chart_sizes[j] / size_scale_factor
-          )
-        }
-        if (type == "ChartHLine") {
-          plt <- plt + geom_hline(
-            data = df_plot,
-            mapping = aes_string(yintercept = ".y", color = col_factors),
-            size = chart_sizes[j] / size_scale_factor
-          )
-        }
-        if (type == "ChartVLine") {
-          plt <- plt + geom_vline(
-            data = df_plot,
-            mapping = aes_string(xintercept = ".y", color = col_factors),
-            size = chart_sizes[j] / size_scale_factor
-          )
-        }
-        if (type == "ChartBar") {
-          plt <- plt + geom_bar(
-            data = df_plot,
-            position = pos,
-            stat = "identity",
-            size = 0.5 * chart_sizes[j] / size_scale_factor,
-            width = 0.5,
-            color = default_color
-          )
-        }
-        if (type == "2D_Histogram") {
-          plt <- plt + geom_rect(
-            data = df_plot,
-            aes(
-              xmin = .x - .x_bin_size / 2,
-              xmax = .x + .x_bin_size / 2,
-              ymin = .y - .y_bin_size / 2,
-              ymax = .y + .y_bin_size / 2,
-              fill = .histogram_count
-            )
-          )
-        }
-
-        # Error bars
-        if (".error" %in% colnames(df)) {
-          plt <- plt +
-            geom_errorbar(
+          
+          if (type == "ChartPoint") {
+            plt <- plt + geom_point(
               data = df_plot,
-              aes_string(ymin = ".ymin", ymax = ".ymax"),
-              size = 1,
-              width = 0.2,
+              shape = 21,
+              size = 2 * chart_sizes[j] / size_scale_factor,
+              stroke = 0.
+            )
+          }
+          if (type == "ChartLine") {
+            plt <- plt + geom_line(
+              data = df_plot,
+              mapping = aes_string(color = col_factors),
+              size = chart_sizes[j] / size_scale_factor
+            )
+          }
+          if (type == "ChartHLine") {
+            plt <- plt + geom_hline(
+              data = df_plot,
+              mapping = aes_string(yintercept = ".y", color = col_factors),
+              size = chart_sizes[j] / size_scale_factor
+            )
+          }
+          if (type == "ChartVLine") {
+            plt <- plt + geom_vline(
+              data = df_plot,
+              mapping = aes_string(xintercept = ".y", color = col_factors),
+              size = chart_sizes[j] / size_scale_factor
+            )
+          }
+          if (type == "ChartBar") {
+            plt <- plt + geom_bar(
+              data = df_plot,
+              position = pos,
+              stat = "identity",
+              size = 0.5 * chart_sizes[j] / size_scale_factor,
+              width = 0.5,
               color = default_color
             )
-        }
-        
-        # Text labels
-        if ("text_labels" %in% colnames(df)) {
-          df_plot2 <- df_plot %>% filter(text_labels != "")
-          if(nrow(df_plot2) > 0) {
+          }
+          if (type == "2D_Histogram") {
+            plt <- plt + geom_rect(
+              data = df_plot,
+              aes(
+                xmin = .x - .x_bin_size / 2,
+                xmax = .x + .x_bin_size / 2,
+                ymin = .y - .y_bin_size / 2,
+                ymax = .y + .y_bin_size / 2,
+                fill = .histogram_count
+              )
+            )
+          }
+          
+          # Error bars
+          if (".error" %in% colnames(df)) {
             plt <- plt +
-              geom_text(
-                data = df_plot2,
-                aes(label = text_labels),
-                size = chart_sizes[j] / size_scale_factor,
-                show.legend = FALSE
+              geom_errorbar(
+                data = df_plot,
+                aes_string(ymin = ".ymin", ymax = ".ymax"),
+                size = 1,
+                width = 0.2,
+                color = default_color
               )
           }
+          
+          # Text labels
+          if ("text_labels" %in% colnames(df)) {
+            df_plot2 <- df_plot %>% filter(text_labels != "")
+            if(nrow(df_plot2) > 0) {
+              plt <- plt +
+                geom_text(
+                  data = df_plot2,
+                  aes(label = text_labels),
+                  size = chart_sizes[j] / size_scale_factor,
+                  show.legend = FALSE
+                )
+            }
+          }
         }
-      }
       }
     } else {
       stop("This chart type is not supported.")
@@ -424,63 +425,63 @@ generate_plot <-
     }
     
     # if(length(ctx$colors) != 0) {
-      if (palette_kind == "CategoryPalette") {
-        
-        cat_pal <- tercen_palette(pl, n = 32)
-        n_color_levels <- df_plot %>% 
-          select(all_of(col_factors_raw)) %>% 
-          unique() %>% 
-          nrow()
-        
-        if(length(cat_pal) < n_color_levels) {
-          cat_pal <- rep(cat_pal, 1L + n_color_levels %/% length(cat_pal))
-        }
-        
+    if (palette_kind == "CategoryPalette") {
+      
+      cat_pal <- tercen_palette(pl, n = 32)
+      n_color_levels <- df_plot %>% 
+        select(all_of(col_factors_raw)) %>% 
+        unique() %>% 
+        nrow()
+      
+      if(length(cat_pal) < n_color_levels) {
+        cat_pal <- rep(cat_pal, 1L + n_color_levels %/% length(cat_pal))
+      }
+      
+      plt <- plt +
+        scale_colour_manual(
+          values = cat_pal
+        ) +
+        scale_fill_manual(
+          values = cat_pal
+        )
+    } else {
+      if (length(brks) != 3) {
         plt <- plt +
-          scale_colour_manual(
-            values = cat_pal
+          scale_color_gradientn(
+            colours = tercen_palette(pl, n = 32),
+            breaks = brks,
+            limits = range(brks),
+            oob = scales::squish
           ) +
-          scale_fill_manual(
-            values = cat_pal
+          scale_fill_gradientn(
+            colours = tercen_palette(pl, n = 32),
+            breaks = brks,
+            limits = range(brks),
+            oob = scales::squish
           )
       } else {
-        if (length(brks) != 3) {
-          plt <- plt +
-            scale_color_gradientn(
-              colours = tercen_palette(pl, n = 32),
-              breaks = brks,
-              limits = range(brks),
-              oob = scales::squish
-            ) +
-            scale_fill_gradientn(
-              colours = tercen_palette(pl, n = 32),
-              breaks = brks,
-              limits = range(brks),
-              oob = scales::squish
-            )
-        } else {
-          pal <-
-            unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>%
-            int_to_rgb()
-          plt <- plt +
-            scale_color_gradient2(
-              low = pal[1],
-              mid = pal[2],
-              high = pal[3],
-              midpoint = brks[2],
-              limits = range(brks),
-              oob = scales::squish
-            ) +
-            scale_fill_gradient2(
-              low = pal[1],
-              mid = pal[2],
-              high = pal[3],
-              midpoint = brks[2],
-              limits = range(brks),
-              oob = scales::squish
-            )
-        }
+        pal <-
+          unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>%
+          int_to_rgb()
+        plt <- plt +
+          scale_color_gradient2(
+            low = pal[1],
+            mid = pal[2],
+            high = pal[3],
+            midpoint = brks[2],
+            limits = range(brks),
+            oob = scales::squish
+          ) +
+          scale_fill_gradient2(
+            low = pal[1],
+            mid = pal[2],
+            high = pal[3],
+            midpoint = brks[2],
+            limits = range(brks),
+            oob = scales::squish
+          )
       }
+    }
     # }
     
     #####
