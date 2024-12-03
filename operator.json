@@ -19,6 +19,12 @@
   },
   {
     "kind": "StringProperty",
+    "name": "file.name.prefix",
+    "defaultValue": "Tercen_Plot_",
+    "description": "Plot output file name prefix."
+  },
+  {
+    "kind": "StringProperty",
     "name": "plot.width",
     "defaultValue": "",
     "description": "Plot width (pixels). If left empty, crosstab dimensions will be used."

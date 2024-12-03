@@ -532,5 +532,5 @@ generate_plot <-
       device = device
     )
     
-    return(plt_files)
+    return(tmp)
   }

@@ -82,9 +82,12 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
   
   new_names <- paste0(
     dirname(plt_files)[1],
-    "/Tercen_Plot_c",
+    "/",
+    input.par$file.name.prefix,
+    "c",
     plt_names$label,
-    ".", tools::file_ext(plt_files)
+    ".",
+    tools::file_ext(plt_files)
   )
   
   file.rename(plt_files, new_names)
