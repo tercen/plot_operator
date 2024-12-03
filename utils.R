@@ -200,7 +200,7 @@ generate_plot <-
       N <-
         if_else(
           multipanel,
-          ds$model$columnTable$cellSize * ctx$cschema$nRows,
+          ds$model$columnTable$cellSize * length(unique(df$.ci)),
           ds$model$columnTable$cellSize
         )
       input.par$plot.width <- round(250 + 1.50 * N)
@@ -209,7 +209,7 @@ generate_plot <-
       N <-
         if_else(
           multipanel,
-          ds$model$rowTable$cellSize * ctx$rschema$nRows,
+          ds$model$rowTable$cellSize * length(unique(df$.ri)),
           ds$model$rowTable$cellSize
         )
       input.par$plot.height <- round(150 + 1.25 * N)
@@ -427,13 +427,13 @@ generate_plot <-
       if (length(brks) != 3) {
         plt <- plt +
           scale_color_gradientn(
-            colours = tercen_palette(palette$colors[[1]], n = 32)[[1]],
+            colours = tercen_palette(palette$colors[[1]], n = 32),
             breaks = brks,
             limits = range(brks),
             oob = scales::squish
           ) +
           scale_fill_gradientn(
-            colours = tercen_palette(palette$colors[[1]], n = 32)[[1]],
+            colours = tercen_palette(palette$colors[[1]], n = 32),
             breaks = brks,
             limits = range(brks),
             oob = scales::squish
@@ -520,8 +520,7 @@ generate_plot <-
     }
     
     tmp <- tempfile(fileext = paste0(".", input.par$plot_type))
-    on.exit(unlink(tmp))
-    
+
     plt_files <- ggplot2::ggsave(
       filename = tmp,
       plot = plt,
@@ -529,7 +528,7 @@ generate_plot <-
       height = input.par$plot.height / 144,
       units = "in",
       dpi = 144,
-      device = device
+      device = input.par$plot_type
     )
     
     return(tmp)
