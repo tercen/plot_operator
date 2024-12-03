@@ -198,9 +198,9 @@
         "metaFactors": [
           {
             "kind": "MetaFactor",
-            "name": "page",
+            "name": "Page",
             "type": "",
-            "description": "",
+            "description": "These factor(s) will be used to produce one plot file per category.",
             "ontologyMapping": "page",
             "crosstabMapping": "row",
             "cardinality": "",
@@ -208,9 +208,9 @@
           },
           {
             "kind": "MetaFactor",
-            "name": "row factor",
+            "name": "Rows",
             "type": "",
-            "description": "",
+            "description": "Factor(s) to stratify per row.",
             "ontologyMapping": "sample",
             "crosstabMapping": "row",
             "cardinality": "",
@@ -218,9 +218,9 @@
           },
           {
             "kind": "MetaFactor",
-            "name": "column factor",
+            "name": "Columns",
             "type": "",
-            "description": "",
+            "description": "Factor(s) to stratify per column.",
             "ontologyMapping": "variable",
             "crosstabMapping": "column",
             "cardinality": "",
@@ -233,9 +233,9 @@
             "metaFactors": [
               {
                 "kind": "MetaFactor",
-                "name": "y axis factor",
+                "name": "Y Axis",
                 "type": "numeric",
-                "description": "",
+                "description": "Factor to use for the graph's Y axis.",
                 "ontologyMapping": "y-axis",
                 "crosstabMapping": "y",
                 "cardinality": "1",
@@ -243,9 +243,9 @@
               },
               {
                 "kind": "MetaFactor",
-                "name": "x axis factor",
+                "name": "X Axis",
                 "type": "",
-                "description": "",
+                "description": "Factor to use for the graph's X axis.",
                 "ontologyMapping": "x-axis",
                 "crosstabMapping": "x",
                 "cardinality": "1",
