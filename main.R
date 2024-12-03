@@ -82,10 +82,19 @@ if(input.par$split_cells | has_page) {
     select(-.rows) %>% 
     tidyr::unite("label", sep = "_r")
   
-  plt_files <- df %>%
-    group_map(~ generate_plot(ctx, ., pl, palette, input.par, ds, chart_types = chart_types, multipanel = FALSE), .keep = TRUE) %>%
-    unlist
-
+  if(hm) {
+    plts <- df %>%
+      group_map(~ generate_plot(ctx, ., pl, palette, input.par, ds, chart_types = chart_types, multipanel = TRUE), .keep = TRUE) %>%
+      bind_rows()
+    
+  } else {
+    plts <- df %>%
+      group_map(~ generate_plot(ctx, ., pl, palette, input.par, ds, chart_types = chart_types, multipanel = FALSE), .keep = TRUE) %>%
+      bind_rows()
+    
+  }
+  plt_files <- plts$plot_file
+  
   new_names <- file.path(
     dirname(plt_files)[1],
     paste0(
@@ -106,11 +115,11 @@ if(input.par$split_cells | has_page) {
   zip::zipr(zipfile = zip_file, files = new_names)
   max_plots <- 10
   first_plots <- lapply(new_names[1:max_plots][!is.na(new_names[1:max_plots])], tercen::file_to_tercen) %>%
-    bind_rows()
+    bind_rows() %>%
+    mutate(plot_width = plts$plot.width, plot_height = plts$plot.height) 
   
   tercen::file_to_tercen(zip_file) %>%
     bind_rows(first_plots) %>%
-    mutate(plot_width = input.par$plot.width, plot_height = input.par$plot_height) %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
     save_relation(ctx)
@@ -127,3 +136,7 @@ if(input.par$split_cells | has_page) {
   
 }
 
+
+
+## plot x and y
+## wrap.1D issue

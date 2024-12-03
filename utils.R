@@ -480,8 +480,8 @@ generate_plot <-
       xlab <- get_axis_labels(ctx, input.par$xlab, "x")
       ylab <- get_axis_labels(ctx, input.par$ylab, "y")
     } else {
-      xlab <- get_axis_labels(ctx, input.par$xlab, "row")
-      ylab <- get_axis_labels(ctx, input.par$ylab, "col")
+      xlab <- get_axis_labels(ctx, input.par$xlab, "col")
+      ylab <- get_axis_labels(ctx, input.par$ylab, "row")
     }
     
     if (input.par$rotate_x_axis)
@@ -531,5 +531,5 @@ generate_plot <-
       device = input.par$plot_type
     )
     
-    return(tmp)
+    return(tibble(plot_file = tmp, plot.width = input.par$plot.width, plot.height = input.par$plot.height))
   }
