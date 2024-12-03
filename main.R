@@ -3,14 +3,13 @@ suppressPackageStartupMessages({
   library(tercenApi)
   library(dplyr)
   library(ggplot2)
-  library(tim)
 })
-
 
 source("./utils_colors.R")
 source("./utils.R")
 
 ctx = tercenCtx()
+
 input.par <- get_settings(ctx)
 input.par$plot.width <- as.numeric(input.par$plot.width)
 input.par$plot.height <- as.numeric(input.par$plot.height)
@@ -24,8 +23,18 @@ is_2d_histogram <- lapply(ctx$schema$columns, "[[", "name") %>%
   all()
 
 ds <- get_data_step(ctx)
+
 df <- getValues(ctx, is_2d_histogram)
 pl <- get_palettes(ds)
+
+palette_df <- jsonlite::fromJSON("palettes.json", simplifyVector = TRUE)
+palette <- try(palette_df %>%
+  filter(name == pl[[1]]$palette$properties[[1]]$value))
+
+if(inherits(palette, "try-error")) {
+  palette <- try(palette_df %>%
+                   filter(name == pl[[1]]$palette$colorList$name))
+}
 
 ## Get operator specs and page factors
 specs <- ctx$query$operatorSettings$operatorRef$operatorSpec
@@ -68,7 +77,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
     tidyr::unite("label", sep = "_r")
   
   plt_files <- df %>%
-    group_map(~ generate_plot(ctx, ., pl, input.par, ds, chart_types = chart_types, multipanel = FALSE), .keep = TRUE) %>%
+    group_map(~ generate_plot(ctx, ., pl, palette, input.par, ds, chart_types = chart_types, multipanel = FALSE), .keep = TRUE) %>%
     unlist
   
   new_names <- paste0(
@@ -97,7 +106,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
   
 } else {
   
-  plt_files <- generate_plot(ctx, df, pl, input.par, ds, chart_types = chart_types)
+  plt_files <- generate_plot(ctx, df, pl, palette, input.par, ds, chart_types = chart_types)
   on.exit(unlink(plt_files))
   
   tercen::file_to_tercen(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%

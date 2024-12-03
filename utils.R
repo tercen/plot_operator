@@ -37,6 +37,8 @@ get_data_step <- function(ctx) {
       identical(s$id, get_step_id(ctx)), wf$steps)
   return(ds)
 }
+
+
 get_palettes <- function(ds) {
   palettes <- lapply(ds$model$axis$xyAxis, "[[", "colors")
   palettes
@@ -64,36 +66,13 @@ get_sizes <- function(ds, size_scale_factor = 4) {
 }
 
 tercen_palette <- function(palette_list, n = 32) {
-  palette_kind <- class(palette_list[[1]]$palette)[1]
-  if (palette_kind == "JetPalette") {
-    pal <- colorRampPalette(
-      c(
-        "#00007F",
-        "blue",
-        "#007FFF",
-        "cyan",
-        "#7FFF7F",
-        "yellow",
-        "#FF7F00",
-        "red",
-        "#7F0000"
-      )
-    )
+  palette_kind <- palette$type
+  if (palette_kind == "sequential" | palette_kind == "diverging") {
+    cols <- palette$colors[[1]]
+    pal <- colorRampPalette(cols)
     palette.colors <- pal(n)
-  } else if (palette_kind == "RampPalette") {
-    cols <-
-      unlist(lapply(palette_list[[1]]$palette$doubleColorElements, "[[", "color"))
-    pal <- colorRampPalette(int_to_rgb(cols))
-    palette.colors <- pal(n)
-  }  else if (palette_kind == "CategoryPalette") {
-    pal_name <- palette_list[[1]]$palette$colorList$name
-    if (pal_name %in% c("", "Palette-1")) {
-      palette.colors <- int_to_rgb(COLOR_LIST_1)
-    } else if (pal_name %in% c("Palette-2")) {
-      palette.colors <- int_to_rgb(COLOR_LIST_2)
-    } else {
-      palette.colors <- int_to_rgb(COLOR_LIST_1)
-    }
+  } else if (palette_kind == "categorical") {
+    palette.colors <- palette$colors
   } else {
     palette.colors <- colorRampPalette(c("white", "red"))
   }
@@ -213,7 +192,7 @@ get_axis_labels <- function(ctx, lab, type) {
 
 
 generate_plot <-
-  function(ctx, df, pl, input.par, ds, chart_types, multipanel = TRUE, size_scale_factor = 4) {
+  function(ctx, df, pl, palette, input.par, ds, chart_types, multipanel = TRUE, size_scale_factor = 4) {
     chart_sizes <- get_sizes(ds)
     
     ### Default width and height
@@ -410,9 +389,9 @@ generate_plot <-
     }
     
     # Add colors
-    palette_kind <- class(pl[[1]]$palette)[1]
+    palette_kind <- palette$type
     
-    if(input.par$color_scales == "fixed" | palette_kind == "CategoryPalette") {
+    if(input.par$color_scales == "fixed" | palette_kind == "categorical") {
       brks <-
         lapply(pl[[1]]$palette$doubleColorElements, "[[", "stringValue") %>%
         unlist() %>%
@@ -425,9 +404,9 @@ generate_plot <-
     }
     
     # if(length(ctx$colors) != 0) {
-    if (palette_kind == "CategoryPalette") {
+    if (palette_kind == "categorical") {
       
-      cat_pal <- tercen_palette(pl, n = 32)
+      cat_pal <- tercen_palette(palette$colors[[1]], n = 32)[[1]]
       n_color_levels <- df_plot %>% 
         select(all_of(col_factors_raw)) %>% 
         unique() %>% 
@@ -448,21 +427,19 @@ generate_plot <-
       if (length(brks) != 3) {
         plt <- plt +
           scale_color_gradientn(
-            colours = tercen_palette(pl, n = 32),
+            colours = tercen_palette(palette$colors[[1]], n = 32)[[1]],
             breaks = brks,
             limits = range(brks),
             oob = scales::squish
           ) +
           scale_fill_gradientn(
-            colours = tercen_palette(pl, n = 32),
+            colours = tercen_palette(palette$colors[[1]], n = 32)[[1]],
             breaks = brks,
             limits = range(brks),
             oob = scales::squish
           )
       } else {
-        pal <-
-          unlist(lapply(pl[[1]]$palette$doubleColorElements, "[[", "color")) %>%
-          int_to_rgb()
+        pal <- palette$colors[[1]]
         plt <- plt +
           scale_color_gradient2(
             low = pal[1],
@@ -542,16 +519,18 @@ generate_plot <-
       device <- NULL
     }
     
-    plt_files <- tim::save_plot(
-      plt,
-      type = input.par$plot_type,
+    tmp <- tempfile(fileext = paste0(".", input.par$plot_type))
+    on.exit(unlink(tmp))
+    
+    plt_files <- ggplot2::ggsave(
+      filename = tmp,
+      plot = plt,
       width = input.par$plot.width / 144,
       height = input.par$plot.height / 144,
       units = "in",
       dpi = 144,
       device = device
     )
-    
     
     return(plt_files)
   }
