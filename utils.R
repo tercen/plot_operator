@@ -90,8 +90,8 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
   # Handle spaces in variable names
   rnames <- paste0("`", rnames, "`")
   cnames <- paste0("`", cnames, "`")
-  
-  if (any(c(rnames, cnames) %in% ".") & wrap.1d) {
+
+  if (any(c(rnames, cnames) %in% c(".", "`.`")) & wrap.1d) {
     facet <- facet_wrap(as.formula(paste(
       "~",
       paste(rnames, collapse = "+"),
@@ -459,7 +459,6 @@ generate_plot <-
           )
       }
     }
-    # }
     
     #####
     ### Axes ranges
