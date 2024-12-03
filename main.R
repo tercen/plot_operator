@@ -31,6 +31,12 @@ palette_df <- jsonlite::fromJSON("palettes.json", simplifyVector = TRUE)
 palette <- try(palette_df %>%
   filter(name == pl[[1]]$palette$properties[[1]]$value))
 
+if(inherits(pl[[1]]$palette, "JetPalette")) {
+  palette <- try(palette_df %>%
+                   filter(name == "Jet"))
+}
+
+
 if(inherits(palette, "try-error")) {
   palette <- try(palette_df %>%
                    filter(name == pl[[1]]$palette$colorList$name))
@@ -61,12 +67,12 @@ hm <- any(chart_types == "ChartHeatmap")
 
 if(is_2d_histogram) chart_types <- "2D_Histogram"
 
-if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
+if(input.par$split_cells | has_page) {
   
-  if(n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
+  if(!hm & n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
   
   if(has_page) {
-    df <- df %>% group_by(across(page_factor_names))
+    df <- df %>% group_by(across(all_of(page_factor_names)))
   } else {
     df <- df %>% group_by(.ci, .ri) 
   }
@@ -79,21 +85,22 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
   plt_files <- df %>%
     group_map(~ generate_plot(ctx, ., pl, palette, input.par, ds, chart_types = chart_types, multipanel = FALSE), .keep = TRUE) %>%
     unlist
-  
-  new_names <- paste0(
+
+  new_names <- file.path(
     dirname(plt_files)[1],
-    "/",
-    input.par$file.name.prefix,
-    "c",
-    plt_names$label,
-    ".",
-    tools::file_ext(plt_files)
+    paste0(
+      input.par$file.name.prefix,
+      "c",
+      plt_names$label,
+      ".",
+      tools::file_ext(plt_files)
+    )
   )
   
   file.rename(plt_files, new_names)
   on.exit(unlink(new_names))
   
-  zip_file <- paste0(dirname(new_names)[1], "/Tercen_Plots.zip")
+  zip_file <- file.path(dirname(new_names)[1], paste0(input.par$file.name.prefix, ".zip"))
   on.exit(unlink(zip_file))
   
   zip::zipr(zipfile = zip_file, files = new_names)
@@ -103,6 +110,7 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
   
   tercen::file_to_tercen(zip_file) %>%
     bind_rows(first_plots) %>%
+    mutate(plot_width = input.par$plot.width, plot_height = input.par$plot_height) %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
     save_relation(ctx)
@@ -118,3 +126,4 @@ if(!hm & (n_cells > input.par$n_cells_max | input.par$split_cells | has_page)) {
     save_relation(ctx)
   
 }
+
