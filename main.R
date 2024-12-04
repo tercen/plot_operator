@@ -38,8 +38,10 @@ if(inherits(pl[[1]]$palette, "JetPalette")) {
 
 
 if(inherits(palette, "try-error")) {
+  palette_name <- pl[[1]]$palette$colorList$name
+  if(palette_name == "") palette_name <- "Palette-1"
   palette <- try(palette_df %>%
-                   filter(name == pl[[1]]$palette$colorList$name))
+                   filter(name == palette_name))
 }
 
 ## Get operator specs and page factors
@@ -48,7 +50,7 @@ specs <- ctx$query$operatorSettings$operatorRef$operatorSpec
 if(length(specs$inputSpecs)) {
   metafactors <- specs$inputSpecs[[1]]$metaFactors
   spec_names <- lapply(metafactors, "[[", "name")
-  page_factors <- lapply(metafactors[grepl("page", unlist(spec_names))], "[[", "factors")[[1]]
+  page_factors <- lapply(metafactors[grepl("Page", unlist(spec_names))], "[[", "factors")[[1]]
 } else {
   metafactors <- NULL
   spec_names <- NULL
@@ -138,5 +140,3 @@ if(input.par$split_cells | has_page) {
   
 }
 
-
-## wrap.1D issue
