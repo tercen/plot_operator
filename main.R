@@ -37,7 +37,7 @@ if(inherits(pl[[1]]$palette, "JetPalette")) {
 }
 
 
-if(inherits(palette, "try-error") | nrow(palette) == 0) {
+if(inherits(palette, "try-error") || nrow(palette) == 0) {
   palette_name <- pl[[1]]$palette$colorList$name
   if(is.null(palette_name)) palette_name <- "Spectral"
   if(palette_name == "") palette_name <- "Palette-1"
