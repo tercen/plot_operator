@@ -37,8 +37,9 @@ if(inherits(pl[[1]]$palette, "JetPalette")) {
 }
 
 
-if(inherits(palette, "try-error")) {
+if(inherits(palette, "try-error") | nrow(palette) == 0) {
   palette_name <- pl[[1]]$palette$colorList$name
+  if(is.null(palette_name)) palette_name <- "Spectral"
   if(palette_name == "") palette_name <- "Palette-1"
   palette <- try(palette_df %>%
                    filter(name == palette_name))
@@ -107,6 +108,7 @@ if(input.par$split_cells | has_page) {
       tools::file_ext(plt_files)
     )
   )
+  plts$new_names <- basename(new_names)
   
   file.rename(plt_files, new_names)
   on.exit(unlink(new_names))
@@ -118,7 +120,7 @@ if(input.par$split_cells | has_page) {
   max_plots <- 10
   first_plots <- lapply(new_names[1:max_plots][!is.na(new_names[1:max_plots])], tercen::file_to_tercen) %>%
     bind_rows() %>%
-    mutate(plot_width = plts$plot.width, plot_height = plts$plot.height) 
+    merge(plts %>% select(-plot_file), by.x = "filename", by.y = "new_names")
   
   tercen::file_to_tercen(zip_file) %>%
     bind_rows(first_plots) %>%

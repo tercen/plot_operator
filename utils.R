@@ -197,21 +197,11 @@ generate_plot <-
     
     ### Default width and height
     if (input.par$plot.width == "" | is.na(input.par$plot.width)) {
-      N <-
-        if_else(
-          multipanel,
-          ds$model$columnTable$cellSize * length(unique(df$.ci)),
-          ds$model$columnTable$cellSize* length(unique(df$.ci))
-        )
+      N <- ds$model$columnTable$cellSize * length(unique(df$.ci))
       input.par$plot.width <- round(250 + 1.50 * N)
     }
     if (input.par$plot.height == "" | is.na(input.par$plot.height)) {
-      N <-
-        if_else(
-          multipanel,
-          ds$model$rowTable$cellSize * length(unique(df$.ri)),
-          ds$model$rowTable$cellSize* length(unique(df$.ri))
-        )
+      N <- ds$model$rowTable$cellSize * length(unique(df$.ri))
       input.par$plot.height <- round(150 + 1.25 * N)
     }
     
