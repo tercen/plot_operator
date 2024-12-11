@@ -20,7 +20,7 @@
   {
     "kind": "StringProperty",
     "name": "file.name.prefix",
-    "defaultValue": "Tercen_Plot_",
+    "defaultValue": "Tercen_Plot",
     "description": "Plot output file name prefix."
   },
   {

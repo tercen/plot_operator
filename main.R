@@ -101,7 +101,7 @@ if(input.par$split_cells | has_page) {
     dirname(plt_files)[1],
     paste0(
       input.par$file.name.prefix,
-      "c",
+      "_c",
       plt_names$label,
       ".",
       tools::file_ext(plt_files)
