@@ -132,7 +132,10 @@ if(input.par$split_cells | has_page) {
   plt_files <- plts$plot_file
   on.exit(unlink(plt_files))
   
-  tercen::file_to_tercen(plt_files, filename = paste0("Tercen_Plot.", tools::file_ext(plt_files))) %>%
+  tercen::file_to_tercen(
+    plt_files,
+    filename = paste0(input.par$file.name.prefix, ".", tools::file_ext(plt_files))
+  ) %>%
     mutate(plot_width = plts$plot.width, plot_height = plts$plot.height) %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
