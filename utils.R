@@ -201,7 +201,7 @@ generate_plot <-
         if_else(
           multipanel,
           ds$model$columnTable$cellSize * length(unique(df$.ci)),
-          ds$model$columnTable$cellSize
+          ds$model$columnTable$cellSize* length(unique(df$.ci))
         )
       input.par$plot.width <- round(250 + 1.50 * N)
     }
@@ -210,7 +210,7 @@ generate_plot <-
         if_else(
           multipanel,
           ds$model$rowTable$cellSize * length(unique(df$.ri)),
-          ds$model$rowTable$cellSize
+          ds$model$rowTable$cellSize* length(unique(df$.ri))
         )
       input.par$plot.height <- round(150 + 1.25 * N)
     }

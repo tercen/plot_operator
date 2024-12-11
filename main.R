@@ -50,7 +50,7 @@ specs <- ctx$query$operatorSettings$operatorRef$operatorSpec
 if(length(specs$inputSpecs)) {
   metafactors <- specs$inputSpecs[[1]]$metaFactors
   spec_names <- lapply(metafactors, "[[", "name")
-  page_factors <- lapply(metafactors[grepl("Page", unlist(spec_names))], "[[", "factors")[[1]]
+  page_factors <- lapply(metafactors[grepl("Page|page", unlist(spec_names))], "[[", "factors")[[1]]
 } else {
   metafactors <- NULL
   spec_names <- NULL
