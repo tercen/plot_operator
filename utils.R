@@ -195,16 +195,6 @@ generate_plot <-
   function(ctx, df, pl, palette, input.par, ds, chart_types, multipanel = TRUE, size_scale_factor = 4) {
     chart_sizes <- get_sizes(ds)
     
-    ### Default width and height
-    if (input.par$plot.width == "" | is.na(input.par$plot.width)) {
-      N <- ds$model$columnTable$cellSize * length(unique(df$.ci))
-      input.par$plot.width <- round(250 + 1.50 * N)
-    }
-    if (input.par$plot.height == "" | is.na(input.par$plot.height)) {
-      N <- ds$model$rowTable$cellSize * length(unique(df$.ri))
-      input.par$plot.height <- round(150 + 1.25 * N)
-    }
-    
     ctx$log(message = paste0("Generating charts: ", paste0(chart_types, collapse = " + ")))
     
     # stop if different colors in layers
@@ -499,6 +489,29 @@ generate_plot <-
     if (input.par$flip)
       plt <- plt + coord_flip()
     
+    ### Update width and height if 1D-wrapped
+    ### Default width and height
+    if (input.par$plot.width == "" | is.na(input.par$plot.width)) {
+      
+      ncols <- if_else(
+        input.par$wrap.1d,
+        max(ggplot_build(plt)$layout$layout$COL),
+        length(unique(df$.ci))
+      )
+      N <- ds$model$columnTable$cellSize * ncols
+      
+      input.par$plot.width <- round(250 + 1.50 * N)
+    }
+    if (input.par$plot.height == "" | is.na(input.par$plot.height)) {
+      nrows <- if_else(
+        input.par$wrap.1d,
+        max(ggplot_build(plt)$layout$layout$ROW),
+        length(unique(df$.ri))
+      )
+      N <- ds$model$rowTable$cellSize * nrows
+      input.par$plot.height <- round(150 + 1.25 * N)
+    }
+
     #####
     ## Save plot file
     if (input.par$plot_type ==  "svg2") {
