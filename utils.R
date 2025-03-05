@@ -79,6 +79,20 @@ tercen_palette <- function(palette_list, n = 32) {
   return(palette.colors)
 }
 
+are_cells_wrapped <- function(ctx, wrap.1d) {
+  cnames <- unlist(ctx$cnames)
+  if (ctx$cnames[[1]] == "")
+    cnames <- "."
+  rnames <- unlist(ctx$rnames)
+  if (ctx$rnames[[1]] == "")
+    rnames <- "."
+  
+  # Handle spaces in variable names
+  rnames <- paste0("`", rnames, "`")
+  cnames <- paste0("`", cnames, "`")
+  return(any(c(rnames, cnames) %in% c(".", "`.`")) & wrap.1d) 
+}
+
 get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
   cnames <- unlist(ctx$cnames)
   if (ctx$cnames[[1]] == "")
@@ -491,11 +505,12 @@ generate_plot <-
     
     ### Update width and height if 1D-wrapped
     ### Default width and height
+    wrapped <- are_cells_wrapped(ctx, input.par$wrap.1d)
     if (input.par$plot.width == "" | is.na(input.par$plot.width)) {
       
       ncols <- if_else(
-        input.par$wrap.1d,
-        max(ggplot_build(plt)$layout$layout$COL),
+        wrapped,
+        as.integer(max(ggplot_build(plt)$layout$layout$COL)),
         length(unique(df$.ci))
       )
       N <- ds$model$columnTable$cellSize * ncols
@@ -504,8 +519,8 @@ generate_plot <-
     }
     if (input.par$plot.height == "" | is.na(input.par$plot.height)) {
       nrows <- if_else(
-        input.par$wrap.1d,
-        max(ggplot_build(plt)$layout$layout$ROW),
+        wrapped,
+        as.integer(max(ggplot_build(plt)$layout$layout$ROW)),
         length(unique(df$.ri))
       )
       N <- ds$model$rowTable$cellSize * nrows
@@ -523,7 +538,7 @@ generate_plot <-
     
     tmp <- tempfile(fileext = paste0(".", input.par$plot_type))
 
-    plt_files <- ggplot2::ggsave(
+    ggplot2::ggsave(
       filename = tmp,
       plot = plt,
       width = input.par$plot.width / 144,
