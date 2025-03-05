@@ -124,6 +124,7 @@ if(input.par$split_cells | has_page) {
   
   tercen::file_to_tercen(zip_file) %>%
     bind_rows(first_plots) %>%
+    ctx$addNamespace() %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
     save_relation(ctx)
@@ -139,6 +140,7 @@ if(input.par$split_cells | has_page) {
     filename = paste0(input.par$file.name.prefix, ".", tools::file_ext(plt_files))
   ) %>%
     mutate(plot_width = plts$plot.width, plot_height = plts$plot.height) %>%
+    ctx$addNamespace() %>%
     as_relation() %>%
     as_join_operator(list(), list()) %>%
     save_relation(ctx)
