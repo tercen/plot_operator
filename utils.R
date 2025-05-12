@@ -28,8 +28,6 @@ get_step_id <- function(ctx) {
   }
 }
 
-
-
 get_data_step <- function(ctx) {
   wf <- ctx$client$workflowService$get(get_workflow_id(ctx))
   ds <-
@@ -37,7 +35,6 @@ get_data_step <- function(ctx) {
       identical(s$id, get_step_id(ctx)), wf$steps)
   return(ds)
 }
-
 
 get_palettes <- function(ds) {
   palettes <- lapply(ds$model$axis$xyAxis, "[[", "colors")
@@ -101,31 +98,37 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
   if (ctx$rnames[[1]] == "")
     rnames <- "."
   
+  col_labs <- function(id) {
+    unlist(
+      tidyr::unite(ctx$cselect()[as.numeric(id) + 1L, ], col = "col")
+    )
+  }
+  row_labs <- function(id) {
+    unlist(
+      tidyr::unite(ctx$rselect()[as.numeric(id) + 1L, ], col = "row")
+    )
+  }
+  
   # Handle spaces in variable names
   rnames <- paste0("`", rnames, "`")
   cnames <- paste0("`", cnames, "`")
 
   if (any(c(rnames, cnames) %in% c(".", "`.`")) & wrap.1d) {
-    facet <- facet_wrap(as.formula(paste(
-      "~",
-      paste(rnames, collapse = "+"),
-      "+",
-      paste(cnames, collapse = "+")
-    )),
-    scales = scales_mode,
-    switch = "y")
+    facet <- facet_wrap(
+      ~ .ri + .ci,
+      labeller = labeller(.ri = row_labs, .ci = col_labs),
+      scales = scales_mode,
+      switch = "y"
+    )
   } else {
-    facet <- facet_grid(as.formula(paste(
-      paste(rnames, collapse = "+"),
-      "~",
-      paste(cnames, collapse = "+")
-    )),
-    scales = scales_mode,
-    switch = "y")
+    facet <- facet_grid(
+      .ri ~ .ci,
+      labeller = labeller(.rows = row_labs, .cols = col_labs),
+      scales = scales_mode,
+      switch = "y"
+    )
   }
-  
   return(facet)
-  
 }
 
 #####
@@ -154,13 +157,28 @@ get_settings <- function(ctx) {
 ### Data preprocessing
 
 getValues <- function(ctx, is_2d_histogram = FALSE) {
+  
   if(is_2d_histogram) {
-    data <- ctx %>% select(.y, .ri, .ci, .axisIndex, .x_bin_size, .y_bin_size, .histogram_count)
+    if(ctx$isPairwise) {
+      data <- ctx$selectSchema(ctx$schema, names = c(".y", ".ri", ".ci", ".axisIndex", ".x_bin_size", ".y_bin_size", ".histogram_count"))
+    } else {
+      data <- ctx %>% select(.y, .ri, .ci, .axisIndex, .x_bin_size, .y_bin_size, .histogram_count)
+    }
   } else {
-    data <- ctx %>% select(.y, .ri, .ci, .axisIndex)
+    if(ctx$isPairwise) {
+      data <- ctx$selectSchema(ctx$schema, names = c(".y", ".ri", ".ci", ".axisIndex"))
+    } else {
+      data <- ctx %>% select(.y, .ri, .ci, .axisIndex)
+    }
   }
-  if (ctx$hasXAxis)
+  if (ctx$hasXAxis) {
     data$.x <- select(ctx, .x)[[".x"]]
+  } else {
+    data <- data %>%
+      group_by(.ci, .ri) %>%
+      mutate(.x = row_number()) %>%
+      ungroup()
+  }
   
   if (length(ctx$colors))
     data <- data %>% dplyr::bind_cols(ctx$select(unique(ctx$colors)))
@@ -168,11 +186,40 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
     text_labels <- ctx$select(unique(ctx$labels)) %>%
       tidyr::unite(col = "text_labels", sep = " - ")
     data <- data %>% dplyr::bind_cols(text_labels)
+    data <- data %>%
+      mutate(rid = text_labels)
+  } else {
+    data <- data %>%
+      mutate(rid = row_number())
   }
+  
   if (length(ctx$errors)) {
     data$.error <- select(ctx, .error)[[".error"]]
     data$.ymin <- data$.y - data$.error
     data$.ymax <- data$.y + data$.error
+  }
+  
+  
+  if(ctx$isPairwise) {
+    data <- tidyr::crossing(
+      .ri_x = unique(data$.ri),
+      .ci_y = unique(data$.ci)
+    ) %>%
+      left_join(
+        data %>% 
+          rename(.ri_x = .ri) %>%
+          select(-.y, -.y_bin_size),
+        by = ".ri_x",
+        relationship = "many-to-many"
+      ) %>%
+      left_join(
+        data %>% 
+          rename(.ci_y = .ci) %>% 
+          select(-.axisIndex, -.x, -.x_bin_size, -text_labels, -.histogram_count),
+        by = c("rid", ".ci_y"),
+        relationship = "many-to-many"
+      ) %>%
+      filter(!is.na(.x) & !is.na(.y))
   }
   
   rnames <- ctx$rselect()
@@ -186,6 +233,8 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
   data <-
     left_join(data, cnames, by = ".ci", suffix = c("", ".YYY")) %>%
     select(-ends_with(".YYY"))
+  
+
   
   return(data)
 }
@@ -363,7 +412,7 @@ generate_plot <-
           }
           
           # Text labels
-          if ("text_labels" %in% colnames(df)) {
+          if ("text_labels" %in% colnames(df) & !ctx$isPairwise) {
             df_plot2 <- df_plot %>% filter(text_labels != "")
             if(nrow(df_plot2) > 0) {
               plt <- plt +

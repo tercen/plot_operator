@@ -59,7 +59,6 @@ if(length(specs$inputSpecs)) {
   
 }
 
-
 has_page <- length(page_factors) != 0
 if(has_page) page_factor_names <- lapply(page_factors, "[[", "name") %>% unlist()
 
