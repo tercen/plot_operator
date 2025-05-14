@@ -3,7 +3,7 @@
   "description": "Export a chart based on the crosstab projection.",
   "tags": ["data visualisation", "export", "reporting", "workflow"],
   "authors": ["tercen"],
-  "container":"ghcr.io/tercen/plot_operator:1.0.0",
+  "container":"ghcr.io/tercen/plot_operator:1.0.1",
   "urls": ["https://github.com/tercen/plot_operator"],
   "properties": [
   {
