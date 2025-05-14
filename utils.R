@@ -215,7 +215,7 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
       left_join(
         data %>% 
           rename(.ci_y = .ci) %>% 
-          select(-any_of(c(".axisIndex", ".x", ".x_bin_size", "text_labels", ".histogram_count"))),
+          select(-any_of(c(".axisIndex", ".x", ".x_bin_size", "text_labels", ".histogram_count", unlist(unique(ctx$colors))))),
         by = c("rid", ".ci_y"),
         relationship = "many-to-many"
       ) %>%

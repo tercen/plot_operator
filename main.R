@@ -23,7 +23,6 @@ is_2d_histogram <- lapply(ctx$schema$columns, "[[", "name") %>%
   all()
 
 ds <- get_data_step(ctx)
-
 df <- getValues(ctx, is_2d_histogram)
 pl <- get_palettes(ds)
 
