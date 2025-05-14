@@ -208,14 +208,14 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
       left_join(
         data %>% 
           rename(.ri_x = .ri) %>%
-          select(-.y, -.y_bin_size),
+          select(-any_of(c(".y", ".y_bin_size"))),
         by = ".ri_x",
         relationship = "many-to-many"
       ) %>%
       left_join(
         data %>% 
           rename(.ci_y = .ci) %>% 
-          select(-.axisIndex, -.x, -.x_bin_size, -text_labels, -.histogram_count),
+          select(-any_of(c(".axisIndex", ".x", ".x_bin_size", "text_labels", ".histogram_count"))),
         by = c("rid", ".ci_y"),
         relationship = "many-to-many"
       ) %>%
