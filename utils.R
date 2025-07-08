@@ -100,12 +100,12 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
   
   col_labs <- function(id) {
     unlist(
-      tidyr::unite(ctx$cselect()[as.numeric(id) + 1L, ], col = "col")
+      tidyr::unite(ctx$cselect()[as.numeric(id) + 1L, ], col = "col", sep = "\n")
     )
   }
   row_labs <- function(id) {
     unlist(
-      tidyr::unite(ctx$rselect()[as.numeric(id) + 1L, ], col = "row")
+      tidyr::unite(ctx$rselect()[as.numeric(id) + 1L, ], col = "row", sep = "\n")
     )
   }
   
@@ -291,10 +291,10 @@ generate_plot <-
       df_plot <- df %>% filter(.axisIndex == layer)
       
       x_labels <- ctx$cselect() %>%
-        tidyr::unite("x_label") %>%
+        tidyr::unite("x_label", sep = "\n") %>%
         mutate(.ci = seq_len(nrow(.)) - 1L)
       y_labels <- ctx$rselect() %>%
-        tidyr::unite("y_label") %>%
+        tidyr::unite("y_label", sep = "\n") %>%
         mutate(.ri = seq_len(nrow(.)) - 1L)
       df_plot <- df_plot %>%
         left_join(x_labels, by = ".ci") %>%
