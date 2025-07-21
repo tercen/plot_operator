@@ -204,7 +204,7 @@
             "description": "These factor(s) will be used to produce one plot file per category.",
             "ontologyMapping": "page",
             "crosstabMapping": "row",
-            "cardinality": "",
+            "cardinality": "0..n",
             "factors": []
           },
           {
@@ -214,7 +214,7 @@
             "description": "Factor(s) to stratify per row.",
             "ontologyMapping": "sample",
             "crosstabMapping": "row",
-            "cardinality": "",
+            "cardinality": "0..n",
             "factors": []
           },
           {
@@ -224,7 +224,27 @@
             "description": "Factor(s) to stratify per column.",
             "ontologyMapping": "variable",
             "crosstabMapping": "column",
-            "cardinality": "",
+            "cardinality": "0..n",
+            "factors": []
+          },
+          {
+            "kind": "MetaFactor",
+            "name": "Colors",
+            "type": "",
+            "description": "Factor(s) to use as colors.",
+            "ontologyMapping": "variable",
+            "crosstabMapping": "colors",
+            "cardinality": "0..n",
+            "factors": []
+          },
+          {
+            "kind": "MetaFactor",
+            "name": "Labels",
+            "type": "",
+            "description": "Factor(s) to use as labels.",
+            "ontologyMapping": "variable",
+            "crosstabMapping": "labels",
+            "cardinality": "0..n",
             "factors": []
           }
         ],
