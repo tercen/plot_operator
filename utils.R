@@ -549,6 +549,25 @@ generate_plot <-
     th <- get(paste0("theme_", input.par$theme))
     theme_set(th(base_size = input.par$base.size))
     
+    # Apply legend point scaling if different from 1.0
+    if(!is.null(input.par$legend.point.scale) && input.par$legend.point.scale != 1.0) {
+      # Get the current point size from the plot data
+      current_size <- if("size" %in% names(df_plot)) {
+        mean(df_plot$size, na.rm = TRUE)
+      } else {
+        2  # Default ggplot2 point size
+      }
+      
+      legend_size <- current_size * input.par$legend.point.scale
+      
+      # Apply scaling to both color and fill legends
+      plt <- plt + 
+        guides(
+          color = guide_legend(override.aes = list(size = legend_size)),
+          fill = guide_legend(override.aes = list(size = legend_size))
+        )
+    }
+    
     if (input.par$flip)
       plt <- plt + coord_flip()
     

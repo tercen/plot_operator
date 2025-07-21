@@ -186,6 +186,12 @@
     "name": "default.color",
     "defaultValue": "#36454f",
     "description": "Default color used for standard elements."
+  },
+  {
+    "kind": "DoubleProperty",
+    "name": "legend.point.scale",
+    "defaultValue": 1.0,
+    "description": "Scale factor for legend point size relative to plot point size. Values > 1 make legend points larger, values < 1 make them smaller."
   }
   
   ],

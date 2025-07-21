@@ -13,6 +13,7 @@ ctx = tercenCtx()
 input.par <- get_settings(ctx)
 input.par$plot.width <- as.numeric(input.par$plot.width)
 input.par$plot.height <- as.numeric(input.par$plot.height)
+input.par$legend.point.scale <- as.numeric(input.par$legend.point.scale)
 
 default_color <- input.par$default.color
 
@@ -81,7 +82,7 @@ if(input.par$split_cells | has_page) {
   plt_names <- df %>% 
     group_data %>% 
     select(-.rows) %>% 
-    tidyr::unite("label", sep = "_r")
+    tidyr::unite("label", sep = "_")
   
   if(hm) {
     plts <- df %>%
@@ -100,7 +101,7 @@ if(input.par$split_cells | has_page) {
     dirname(plt_files)[1],
     paste0(
       input.par$file.name.prefix,
-      "_c",
+      "_",
       plt_names$label,
       ".",
       tools::file_ext(plt_files)
