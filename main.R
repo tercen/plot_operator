@@ -3,6 +3,7 @@ suppressPackageStartupMessages({
   library(tercenApi)
   library(dplyr)
   library(ggplot2)
+  library(svglite)
 })
 
 source("./utils_colors.R")
