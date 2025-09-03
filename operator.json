@@ -239,7 +239,7 @@
             "type": "",
             "description": "Factor(s) to use as colors.",
             "ontologyMapping": "variable",
-            "crosstabMapping": "colors",
+            "crosstabMapping": "color",
             "cardinality": "0..n",
             "factors": []
           },
@@ -249,7 +249,7 @@
             "type": "",
             "description": "Factor(s) to use as labels.",
             "ontologyMapping": "variable",
-            "crosstabMapping": "labels",
+            "crosstabMapping": "label",
             "cardinality": "0..n",
             "factors": []
           }
