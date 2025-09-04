@@ -3,7 +3,7 @@
   "description": "Export a chart based on the crosstab projection.",
   "tags": ["data visualisation", "export", "reporting", "workflow"],
   "authors": ["tercen"],
-  "container":"ghcr.io/tercen/plot_operator:1.0.9",
+  "container":"ghcr.io/tercen/plot_operator:1.0.10",
   "urls": ["https://github.com/tercen/plot_operator"],
   "properties": [
   {
@@ -232,26 +232,6 @@
             "crosstabMapping": "column",
             "cardinality": "0..n",
             "factors": []
-          },
-          {
-            "kind": "MetaFactor",
-            "name": "Colors",
-            "type": "",
-            "description": "Factor(s) to use as colors.",
-            "ontologyMapping": "variable",
-            "crosstabMapping": "color",
-            "cardinality": "0..n",
-            "factors": []
-          },
-          {
-            "kind": "MetaFactor",
-            "name": "Labels",
-            "type": "",
-            "description": "Factor(s) to use as labels.",
-            "ontologyMapping": "variable",
-            "crosstabMapping": "label",
-            "cardinality": "0..n",
-            "factors": []
           }
         ],
         "axis": [
@@ -276,6 +256,26 @@
                 "ontologyMapping": "x-axis",
                 "crosstabMapping": "x",
                 "cardinality": "1",
+                "factors": []
+              },
+              {
+                "kind": "MetaFactor",
+                "name": "Colors",
+                "type": "",
+                "description": "Factor(s) to use as colors.",
+                "ontologyMapping": "variable",
+                "crosstabMapping": "color",
+                "cardinality": "0..n",
+                "factors": []
+              },
+              {
+                "kind": "MetaFactor",
+                "name": "Labels",
+                "type": "",
+                "description": "Factor(s) to use as labels.",
+                "ontologyMapping": "variable",
+                "crosstabMapping": "label",
+                "cardinality": "0..n",
                 "factors": []
               }
             ]
