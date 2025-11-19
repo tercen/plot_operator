@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": ".devcontainer/devcontainer.json",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "devcontainer.json",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "3",
+ "dataUri": "lfs/17/a8/25ffec6e07d17e3c727c651be687a8fc215ba1b166b5b31277b42cf76fc7",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 935.0
+}

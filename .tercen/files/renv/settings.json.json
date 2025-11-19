@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": "renv/settings.json",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "settings.json",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "2",
+ "dataUri": "lfs/0a/3a/4d7bdfe0540a89570d73360e4b839ad14c156aab3483d4e86618c781ef0e",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 431.0
+}

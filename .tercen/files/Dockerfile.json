@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": "Dockerfile",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "Dockerfile",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "",
+ "dataUri": "lfs/57/9d/ae225bdc4f57e62f48c8a40c75ebd9d35a86bc5bbe64f0e93a9be8cb7a1e",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 414.0
+}
