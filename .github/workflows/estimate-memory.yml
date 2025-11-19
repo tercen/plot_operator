@@ -60,7 +60,6 @@ jobs:
             --repo-url ${{ inputs.repo_url }} \
             --team-name ${{ inputs.team_name }} \
             --tercen-url http://127.0.0.1:5400 \
-            --tercen-token ${{ secrets.TERCEN_TOKEN }} \
             --n-obs ${{ inputs.n_obs }} \
             --n-sp ${{ inputs.n_sp }} \
             --n-variable ${{ inputs.n_variable }} \
