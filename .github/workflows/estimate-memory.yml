@@ -62,7 +62,7 @@ jobs:
         run: |
           docker run --rm \
             ${{ env.REGISTRY }}/tercen/memory_estimator:main \
-            --username ${{ secrets.TERCEN_USERNAME }} \
+            --username ${{ secrets.TERCEN_USER }} \
             --password ${{ secrets.TERCEN_PASSW }} \
             --repo-url ${{ inputs.repo_url }} \
             --team-name ${{ inputs.team_name }} \
