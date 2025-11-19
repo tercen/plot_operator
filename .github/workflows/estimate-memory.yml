@@ -1,0 +1,84 @@
+name: Estimate Memory
+
+on:
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'GitHub repository URL of the operator to test'
+        required: true
+        type: string
+      team_name:
+        description: 'Team name for project and workflow ownership'
+        required: true
+        type: string
+      n_obs:
+        description: 'Number of observations (default: 500)'
+        required: false
+        type: string
+        default: '500:2:700'
+      n_sp:
+        description: 'Number of species (default: 4)'
+        required: false
+        type: string
+        default: '2:2:10'
+      n_variable:
+        description: 'Number of variables (default: 4)'
+        required: false
+        type: string
+        default: '2:2:10'
+
+jobs:
+  estimate-memory:
+    runs-on: ubuntu-latest
+    outputs:
+      memory-estimate: ${{ steps.save-output.outputs.result }}
+    steps:
+      - name: Start tercen server
+        uses: tercen/actions/start-tercen@main
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run memory estimator
+        id: run-estimator
+        run: |
+          docker run --rm \
+            ${{ env.REGISTRY }}/tercen/memory_estimator:main \
+            --repo-url ${{ inputs.repo_url }} \
+            --team-name ${{ inputs.team_name }} \
+            --tercen-url http://127.0.0.1:5400 \
+            --tercen-token ${{ secrets.TERCEN_TOKEN }} \
+            --n-obs ${{ inputs.n_obs }} \
+            --n-sp ${{ inputs.n_sp }} \
+            --n-variable ${{ inputs.n_variable }} \
+            > memory-estimate.json
+
+      - name: Save output
+        id: save-output
+        run: |
+          echo "result=$(cat memory-estimate.json | jq -c .)" >> $GITHUB_OUTPUT
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-estimate
+          path: memory-estimate.json
+
+  use-memory-estimate:
+    runs-on: ubuntu-latest
+    needs: estimate-memory
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: memory-estimate
+
+      - name: Display memory estimate
+        run: |
+          echo "Memory estimate from previous job:"
+          cat memory-estimate.json
+          echo "From output: ${{ needs.estimate-memory.outputs.memory-estimate }}"
