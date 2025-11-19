@@ -7,7 +7,7 @@ on:
         description: 'Local tercen servicce'
         required: true
         type: string
-        default: 'http://172.42.0.42:5400'
+        default: 'http://127.0.0.1:5400'
       repo_url:
         description: 'GitHub repository URL of the operator to test'
         required: true
@@ -60,7 +60,7 @@ jobs:
       - name: Run memory estimator
         id: run-estimator
         run: |
-          docker run --rm --net=host \
+          docker run --rm --network start-tercen_tercen \
             ${{ env.REGISTRY }}/tercen/memory_estimator:main \
             --username ${{ secrets.TERCEN_USER }} \
             --password ${{ secrets.TERCEN_PASSW }} \
