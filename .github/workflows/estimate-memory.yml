@@ -1,10 +1,31 @@
 name: Estimate Memory
 
 on:
-  push:
-    branches: ['memory_estimate']
-
-
+  workflow_dispatch:
+    inputs:
+      repo_url:
+        description: 'GitHub repository URL of the operator to test'
+        required: true
+        type: string
+      team_name:
+        description: 'Team name for project and workflow ownership'
+        required: true
+        type: string
+      n_obs:
+        description: 'Number of observations (default: 500)'
+        required: false
+        type: string
+        default: '500:2:700'
+      n_sp:
+        description: 'Number of species (default: 4)'
+        required: false
+        type: string
+        default: '2:2:10'
+      n_variable:
+        description: 'Number of variables (default: 4)'
+        required: false
+        type: string
+        default: '2:2:10'
 
 jobs:
   estimate-memory:
