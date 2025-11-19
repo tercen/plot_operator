@@ -1,0 +1,30 @@
+{
+ "kind": "Project",
+ "id": "",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": "https://github.com/tercen/plot_operator"
+ },
+ "version": "cbd3f7cbd052bea31e53ad3d51554757c6b558ce",
+ "isPublic": false
+}

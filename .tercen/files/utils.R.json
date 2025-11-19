@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": "utils.R",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "utils.R",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "",
+ "dataUri": "lfs/56/f3/8ceba8034bee9403bc012e675bf90dd6b0152e5b956793bf9b396800e664",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 18482.0
+}

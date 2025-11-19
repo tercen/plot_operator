@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": "utils_colors.R",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "utils_colors.R",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "",
+ "dataUri": "lfs/b6/ad/4e034d8e95c201b4adddf414965aaf482bea7310c7b6f3a1c00e5242ae55",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 894.0
+}

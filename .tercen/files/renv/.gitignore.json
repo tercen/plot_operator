@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": "renv/.gitignore",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": ".gitignore",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "2",
+ "dataUri": "lfs/9b/21/f810728401a29675d989e533d4ed4626be7e18479cbce7e48f1cfe91747b",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 63.0
+}

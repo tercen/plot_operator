@@ -1,0 +1,43 @@
+{
+ "kind": "FileDocument",
+ "id": "plot_operator.Rproj",
+ "isDeleted": false,
+ "rev": "",
+ "description": "",
+ "name": "plot_operator.Rproj",
+ "acl": {
+  "kind": "Acl",
+  "owner": "",
+  "aces": []
+ },
+ "createdDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "lastModifiedDate": {
+  "kind": "Date",
+  "value": ""
+ },
+ "urls": [],
+ "tags": [],
+ "meta": [],
+ "url": {
+  "kind": "Url",
+  "uri": ""
+ },
+ "version": "",
+ "isPublic": false,
+ "projectId": "",
+ "folderId": "",
+ "dataUri": "lfs/7e/04/ee11896ded733b34dd893859570836bb7afb24af29bc1dfe62862afeeed3",
+ "metadata": {
+  "kind": "FileMetadata",
+  "contentType": "",
+  "cacheControl": "",
+  "contentEncoding": "",
+  "contentLanguage": "",
+  "md5Hash": ""
+ },
+ "size": 0,
+ "storageSize": 267.0
+}
