@@ -7,10 +7,12 @@ on:
         description: 'GitHub repository URL of the operator to test'
         required: true
         type: string
+        default: 'https://github.com/tercen/plot_operator'
       team_name:
         description: 'Team name for project and workflow ownership'
         required: true
         type: string
+        default: 'test'
       n_obs:
         description: 'Number of observations (default: 500)'
         required: false
