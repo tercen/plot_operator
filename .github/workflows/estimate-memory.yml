@@ -3,6 +3,11 @@ name: Estimate Memory
 on:
   workflow_dispatch:
     inputs:
+      service_uri:
+        description: 'Local tercen servicce'
+        required: true
+        type: string
+        default: 'http://172.42.0.42:5400'
       repo_url:
         description: 'GitHub repository URL of the operator to test'
         required: true
@@ -28,6 +33,7 @@ on:
         required: false
         type: string
         default: '2:2:10'
+
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
@@ -59,7 +65,7 @@ jobs:
             --tercen-token ${{ secrets.GH_PAT }} \
             --repo-url ${{ inputs.repo_url }} \
             --team-name ${{ inputs.team_name }} \
-            --tercen-url http://127.0.0.1:5400 \
+            --tercen-url ${{ inputs.service_uri }} \
             --n-obs ${{ inputs.n_obs }} \
             --n-sp ${{ inputs.n_sp }} \
             --n-variable ${{ inputs.n_variable }} \
