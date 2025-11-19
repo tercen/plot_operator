@@ -60,7 +60,7 @@ jobs:
       - name: Run memory estimator
         id: run-estimator
         run: |
-          docker run --rm \
+          docker run --rm --net=host \
             ${{ env.REGISTRY }}/tercen/memory_estimator:main \
             --username ${{ secrets.TERCEN_USER }} \
             --password ${{ secrets.TERCEN_PASSW }} \
