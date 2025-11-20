@@ -57,20 +57,37 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run memory estimator
+      - name: Debug connection to Tercen
         id: run-estimator
         run: |
-          docker run --rm --net=host\
-            ${{ env.REGISTRY }}/tercen/memory_estimator:main \
-            --username ${{ secrets.TERCEN_USER }} \
-            --password ${{ secrets.TERCEN_PASSW }} \
-            --repo-url ${{ inputs.repo_url }} \
-            --team-name ${{ inputs.team_name }} \
-            --tercen-url ${{ inputs.service_uri }} \
-            --n-obs ${{ inputs.n_obs }} \
-            --n-sp ${{ inputs.n_sp }} \
-            --n-variable ${{ inputs.n_variable }} \
-            > memory-estimate.json
+          echo "=== Testing connectivity ==="
+
+          echo "1. Testing localhost:5400"
+          curl -v http://localhost:5400 || echo "Failed to connect to localhost:5400"
+
+          echo -e "\n2. Testing 127.0.0.1:5400"
+          curl -v http://127.0.0.1:5400 || echo "Failed to connect to 127.0.0.1:5400"
+
+          echo -e "\n3. Testing 0.0.0.0:5400"
+          curl -v http://0.0.0.0:5400 || echo "Failed to connect to 0.0.0.0:5400"
+
+          echo -e "\n4. Checking open ports"
+          netstat -tuln | grep 5400 || echo "Port 5400 not found in netstat"
+
+          echo -e "\n5. Checking running docker containers"
+          docker ps
+
+          echo -e "\n6. Checking tercen container logs (if exists)"
+          docker ps --filter "name=tercen" -q | xargs -r docker logs --tail 50
+
+          echo -e "\n7. Testing from inside a docker container with --net=host"
+          docker run --rm --net=host curlimages/curl:latest curl -v http://localhost:5400 || echo "Failed from docker container"
+
+          echo -e "\n8. Testing input service_uri: ${{ inputs.service_uri }}"
+          curl -v ${{ inputs.service_uri }} || echo "Failed to connect to ${{ inputs.service_uri }}"
+
+          # Create a dummy JSON file so the workflow doesn't fail
+          echo '{"status": "debug"}' > memory-estimate.json
 
       - name: Save output
         id: save-output
