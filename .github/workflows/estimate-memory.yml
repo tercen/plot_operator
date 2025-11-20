@@ -50,6 +50,9 @@ jobs:
       - name: Start tercen server
         uses: tercen/actions/start-tercen@main
 
+      - name: Wait for Tercen to be ready
+        run: sleep 30
+
       - name: Log in to the Container registry
         uses: docker/login-action@v3.3.0
         with:
