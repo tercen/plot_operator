@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       service_uri:
-        description: 'Local tercen servicce'
+        description: 'Local Tercen service'
         required: true
         type: string
         default: 'http://127.0.0.1:5400'
@@ -50,28 +50,6 @@ jobs:
       - name: Start tercen server
         uses: tercen/actions/start-tercen@main
 
-      - name: Wait for Tercen to be ready
-        run: |
-          echo "Waiting for Tercen to finish initializing..."
-          max_wait=10
-          elapsed=0
-          while [ $elapsed -lt $max_wait ]; do
-            if docker logs start-tercen-tercen-1 2>&1 | grep -q "ServiceFactory : Factory service initialized"; then
-              echo "Tercen is ready!"
-              sleep 5
-              break
-            fi
-            echo "Still waiting for Tercen... ($elapsed seconds elapsed)"
-            sleep 10
-            elapsed=$((elapsed + 10))
-          done
-          
-          if [ $elapsed -ge $max_wait ]; then
-            echo "Tercen did not start within $max_wait seconds"
-            docker logs start-tercen-tercen-1
-            exit 1
-          fi
-
       - name: Log in to the Container registry
         uses: docker/login-action@v3.3.0
         with:
@@ -79,43 +57,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Debug connection to Tercen
+      - name: Run memory estimator
         id: run-estimator
         run: |
-          echo "=== Testing connectivity ==="
-
-          echo "1. Testing localhost:5400"
-          curl -v http://localhost:5400 || echo "Failed to connect to localhost:5400"
-
-          echo -e "\n2. Testing 127.0.0.1:5400"
-          curl -v http://127.0.0.1:5400 || echo "Failed to connect to 127.0.0.1:5400"
-
-          echo -e "\n3. Testing 0.0.0.0:5400"
-          curl -v http://0.0.0.0:5400 || echo "Failed to connect to 0.0.0.0:5400"
-
-          echo -e "\n4. Checking open ports"
-          netstat -tuln | grep 5400 || echo "Port 5400 not found in netstat"
-
-          echo -e "\n5. Checking running docker containers"
-          docker ps
-
-          echo -e "\n6. Checking tercen container logs"
-          TERCEN_CONTAINER=$(docker ps --filter "name=tercen" --format "{{.Names}}" | grep -E "tercen-1$" | head -1)
-          if [ -n "$TERCEN_CONTAINER" ]; then
-            echo "Container name: $TERCEN_CONTAINER"
-            docker logs --tail 100 "$TERCEN_CONTAINER"
-          else
-            echo "No tercen container found"
-          fi
-
-          echo -e "\n7. Testing from inside a docker container with --net=host"
-          docker run --rm --net=host curlimages/curl:latest curl -v http://localhost:5400 || echo "Failed from docker container"
-
-          echo -e "\n8. Testing input service_uri: ${{ inputs.service_uri }}"
-          curl -v ${{ inputs.service_uri }} || echo "Failed to connect to ${{ inputs.service_uri }}"
-
-          # Create a dummy JSON file so the workflow doesn't fail
-          echo '{"status": "debug"}' > memory-estimate.json
+          docker run --rm --net=host\
+            ${{ env.REGISTRY }}/tercen/memory_estimator:main \
+            --username ${{ secrets.TERCEN_USER }} \
+            --password ${{ secrets.TERCEN_PASSW }} \
+            --repo-url ${{ inputs.repo_url }} \
+            --team-name ${{ inputs.team_name }} \
+            --tercen-url ${{ inputs.service_uri }} \
+            --n-obs ${{ inputs.n_obs }} \
+            --n-sp ${{ inputs.n_sp }} \
+            --n-variable ${{ inputs.n_variable }} \
+            > memory-estimate.json
 
       - name: Save output
         id: save-output
