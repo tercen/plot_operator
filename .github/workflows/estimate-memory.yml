@@ -80,8 +80,14 @@ jobs:
           echo -e "\n5. Checking running docker containers"
           docker ps
 
-          echo -e "\n6. Checking tercen container logs (if exists)"
-          docker ps --filter "name=tercen" -q | xargs -r docker logs --tail 50
+          echo -e "\n6. Checking tercen container logs"
+          TERCEN_CONTAINER=$(docker ps --filter "name=tercen" --format "{{.Names}}" | grep -E "tercen-1$" | head -1)
+          if [ -n "$TERCEN_CONTAINER" ]; then
+            echo "Container name: $TERCEN_CONTAINER"
+            docker logs --tail 100 "$TERCEN_CONTAINER"
+          else
+            echo "No tercen container found"
+          fi
 
           echo -e "\n7. Testing from inside a docker container with --net=host"
           docker run --rm --net=host curlimages/curl:latest curl -v http://localhost:5400 || echo "Failed from docker container"
