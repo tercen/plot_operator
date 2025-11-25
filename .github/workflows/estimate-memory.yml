@@ -13,6 +13,11 @@ on:
         required: true
         type: string
         default: 'https://github.com/tercen/plot_operator'
+      repo_branch:
+        description: 'GitHub repository URL of the operator to test'
+        required: true
+        type: string
+        default: 'master'
       team_name:
         description: 'Team name for project and workflow ownership'
         required: true
@@ -66,6 +71,8 @@ jobs:
             --username ${{ secrets.TERCEN_USER }} \
             --password ${{ secrets.TERCEN_PASSW }} \
             --repo-url ${{ inputs.repo_url }} \
+            --repo-branch ${{ inputs.repo_branch }} \
+            --repo-version ${{ inputs.repo_version }} \
             --team-name ${{ inputs.team_name }} \
             --tercen-url ${{ inputs.service_uri }} \
             --n-obs ${{ inputs.n_obs }} \
