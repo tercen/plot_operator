@@ -1,0 +1,21 @@
+{
+  "intercept": 16.658792949629134,
+  "offset": 1.7939046827073621,
+  "features": [
+    {
+      "feature": "n_obs",
+      "coefficient": 1.0,
+      "exponent": -0.19019460089516974
+    },
+    {
+      "feature": "n_sp",
+      "coefficient": 1.0,
+      "exponent": 0.18386523735543314
+    },
+    {
+      "feature": "n_variable",
+      "coefficient": 1.0,
+      "exponent": 0.20253903893847847
+    }
+  ]
+}
