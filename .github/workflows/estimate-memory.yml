@@ -72,7 +72,6 @@ jobs:
             --password ${{ secrets.TERCEN_PASSW }} \
             --repo-url ${{ inputs.repo_url }} \
             --repo-branch ${{ inputs.repo_branch }} \
-            --repo-version ${{ inputs.repo_version }} \
             --team-name ${{ inputs.team_name }} \
             --tercen-url ${{ inputs.service_uri }} \
             --n-obs ${{ inputs.n_obs }} \
