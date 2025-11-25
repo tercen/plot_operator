@@ -60,7 +60,8 @@ jobs:
       - name: Run memory estimator
         id: run-estimator
         run: |
-          docker run --rm --net=host\
+          docker run --rm --net=host \
+            -v ${{ github.workspace }}:/output \
             ${{ env.REGISTRY }}/tercen/memory_estimator:main \
             --username ${{ secrets.TERCEN_USER }} \
             --password ${{ secrets.TERCEN_PASSW }} \
@@ -70,7 +71,8 @@ jobs:
             --n-obs ${{ inputs.n_obs }} \
             --n-sp ${{ inputs.n_sp }} \
             --n-variable ${{ inputs.n_variable }} \
-            > memory-estimate.json
+            --output /output/run_estimate.csv
+
 
       - name: Save output
         id: save-output
@@ -80,20 +82,51 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: memory-estimate
-          path: memory-estimate.json
+          name: run_estimate
+          path: ${{ github.workspace }}/run_estimate.csv
 
-  use-memory-estimate:
+  create-memory-model:
     runs-on: ubuntu-latest
     needs: estimate-memory
+    permissions:
+      contents: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: memory-estimate
+          name: run_estimate
 
-      - name: Display memory estimate
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.3.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run model estimator
         run: |
-          echo "Memory estimate from previous job:"
-          cat memory-estimate.json
-          echo "From output: ${{ needs.estimate-memory.outputs.memory-estimate }}"
+          docker pull ${{ env.REGISTRY }}/tercen/model_estimator:main
+          docker run --rm -v ${{ github.workspace }}:/data \
+            ${{ env.REGISTRY }}/tercen/model_estimator:main \
+            /data/run_estimate.csv \
+            --target-column estimated_ram_mb \
+            --output /data/memory_model
+
+      - name: Commit model files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add memory_model_model.json memory_model_simple_model.png
+          git commit -m "Update memory model [skip ci]" || echo "No changes to commit"
+          git push
+
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-model
+          path: |
+            ${{ github.workspace }}/memory_model_model.json
+            ${{ github.workspace }}/memory_model_simple_model.png
