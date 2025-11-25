@@ -38,6 +38,11 @@ on:
         required: false
         type: string
         default: '2:2:10'
+      sig_level:
+        description: 'Model significance level (default: 0.05)'
+        required: false
+        type: string
+        default: '0.05'
 
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
@@ -119,7 +124,9 @@ jobs:
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
             /data/run_estimate.csv \
             --target-column estimated_ram_mb \
-            --output /data/memory_model
+            --ignore-columns runtime_seconds \
+            --significance-threshold ${{ inputs.sig_level }} \ 
+            --output /data/memory_model 
 
       - name: Commit model files
         run: |
