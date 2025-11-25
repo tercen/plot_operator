@@ -122,11 +122,12 @@ jobs:
           docker pull ${{ env.REGISTRY }}/tercen/model_estimator:main
           docker run --rm -v ${{ github.workspace }}:/data \
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
-            /data/run_estimate.csv \
             --target-column estimated_ram_mb \
             --ignore-columns runtime_seconds \
-            --significance-threshold ${{ inputs.sig_level }} \ 
-            --output /data/memory_model 
+            --significance-threshold ${{ inputs.sig_level }} \
+            --output /data/memory_model \
+            /data/run_estimate.csv
+          
 
       - name: Commit model files
         run: |
