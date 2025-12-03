@@ -39,7 +39,7 @@
  "version": "",
  "isPublic": false,
  "projectId": "",
- "folderId": "6",
+ "folderId": "3",
  "nRows": 1000,
  "columns": [
   {
@@ -145,5 +145,5 @@
   "id": "9fecd178-58a9-4de9-b5f5-5bf01a92ff55"
  },
  "size": 20368,
- "storageSize": 0.0
+ "storageSize": 20368.0
 }

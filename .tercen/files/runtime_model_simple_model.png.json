@@ -1,10 +1,10 @@
 {
  "kind": "FileDocument",
- "id": ".devcontainer/devcontainer.json",
+ "id": "runtime_model_simple_model.png",
  "isDeleted": false,
  "rev": "",
  "description": "",
- "name": "devcontainer.json",
+ "name": "runtime_model_simple_model.png",
  "acl": {
   "kind": "Acl",
   "owner": "",
@@ -28,8 +28,8 @@
  "version": "",
  "isPublic": false,
  "projectId": "",
- "folderId": "4",
- "dataUri": "lfs/17/a8/25ffec6e07d17e3c727c651be687a8fc215ba1b166b5b31277b42cf76fc7",
+ "folderId": "",
+ "dataUri": "lfs/c0/a8/a6282c76242161e16c0c5a9fcd920cbebfe600bdb69378a451ceba2211e6",
  "metadata": {
   "kind": "FileMetadata",
   "contentType": "",
@@ -39,5 +39,5 @@
   "md5Hash": ""
  },
  "size": 0,
- "storageSize": 935.0
+ "storageSize": 122094.0
 }
