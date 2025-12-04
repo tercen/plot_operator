@@ -26,3 +26,17 @@ Output data|.
 ##### Details
 
 The operator maps the input data projected in Tercen to a ggplot chart.
+
+## Test GithubAction locally
+
+NOTE: Must disable start-tercen in the workflow file
+```bash
+act workflow_dispatch -W .github/workflows/estimate-memory.yml \
+--input service_uri='http://127.0.0.1:5400' \
+--input repo_url='https://github.com/tercen/plot_operator' \
+--input repo_branch='master' \
+--input team_name='test' \
+--secret TERCEN_USER=test \
+--secret TERCEN_PASSW=test \
+--secret GITHUB_TOKEN=$GITHUB_TOKEN
+```

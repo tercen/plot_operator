@@ -23,26 +23,6 @@ on:
         required: true
         type: string
         default: 'test'
-      n_obs:
-        description: 'Number of observations (default: 500)'
-        required: false
-        type: string
-        default: '500:2:700'
-      n_sp:
-        description: 'Number of species (default: 4)'
-        required: false
-        type: string
-        default: '2:2:10'
-      n_variable:
-        description: 'Number of variables (default: 4)'
-        required: false
-        type: string
-        default: '2:2:10'
-      sig_level:
-        description: 'Model significance level (default: 0.05)'
-        required: false
-        type: string
-        default: '0.05'
 
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
@@ -70,7 +50,7 @@ jobs:
       - name: Run memory estimator
         id: run-estimator
         run: |
-          docker run --rm --net=host \
+          docker run --rm --net=host --pull always \
             -v ${{ github.workspace }}:/output \
             ${{ env.REGISTRY }}/tercen/memory_estimator:main \
             --username ${{ secrets.TERCEN_USER }} \
@@ -79,16 +59,13 @@ jobs:
             --repo-branch ${{ inputs.repo_branch }} \
             --team-name ${{ inputs.team_name }} \
             --tercen-url ${{ inputs.service_uri }} \
-            --n-obs ${{ inputs.n_obs }} \
-            --n-sp ${{ inputs.n_sp }} \
-            --n-variable ${{ inputs.n_variable }} \
             --output /output/run_estimate.csv
 
 
       - name: Save output
         id: save-output
         run: |
-          echo "result=$(cat memory-estimate.json | jq -c .)" >> $GITHUB_OUTPUT
+          echo "result=$(cat run_estimate.json | jq -c .)" >> $GITHUB_OUTPUT
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -124,7 +101,6 @@ jobs:
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
             --target-column estimated_ram_mb \
             --ignore-columns runtime_seconds \
-            --significance-threshold ${{ inputs.sig_level }} \
             --output /data/memory_model \
             /data/run_estimate.csv
           
@@ -173,7 +149,6 @@ jobs:
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
             --target-column runtime_seconds \
             --ignore-columns estimated_ram_mb \
-            --significance-threshold ${{ inputs.sig_level }} \
             --output /data/runtime_model \
             /data/run_estimate.csv
 
