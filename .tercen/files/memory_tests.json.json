@@ -1,10 +1,10 @@
 {
  "kind": "FileDocument",
- "id": "memory_config.json",
+ "id": "memory_tests.json",
  "isDeleted": false,
  "rev": "",
  "description": "",
- "name": "memory_config.json",
+ "name": "memory_tests.json",
  "acl": {
   "kind": "Acl",
   "owner": "",
