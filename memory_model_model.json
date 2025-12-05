@@ -1,11 +1,11 @@
 {
-  "intercept": 483.41640783343087,
-  "offset": 104.92983720108055,
+  "intercept": 487.68880052086394,
+  "offset": 104.92983720108009,
   "features": [
     {
       "feature": "n_variable",
       "coefficient": 1.0,
-      "exponent": 0.1269440109756802
+      "exponent": 0.11424960987811217
     }
   ]
 }

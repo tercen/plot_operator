@@ -29,7 +29,7 @@
  "isPublic": false,
  "projectId": "",
  "folderId": "",
- "dataUri": "lfs/fe/97/3accd05d06d09dec0dff9d745602a493e7fc8bbaf4c2134867d5e8fdad53",
+ "dataUri": "lfs/c1/68/bb8d9358052c0bbb347bc237d515e4e051bca48f60a016efc89a21adf64a",
  "metadata": {
   "kind": "FileMetadata",
   "contentType": "",
@@ -39,5 +39,5 @@
   "md5Hash": ""
  },
  "size": 0,
- "storageSize": 289.0
+ "storageSize": 285.0
 }
