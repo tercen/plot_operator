@@ -109,8 +109,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase
           git add memory_model_model.json memory_model_simple_model.png
           git commit -m "Update memory model [skip ci]" || echo "No changes to commit"
+          git pull --rebase
           git push
 
       - name: Upload model artifact
@@ -123,7 +125,7 @@ jobs:
 
   create-runtime-model:
     runs-on: ubuntu-latest
-    needs: [estimate-memory, create-memory-model]
+    needs: create-memory-model
     permissions:
       contents: write
     steps:
@@ -157,8 +159,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git pull --rebase
           git add runtime_model_model.json runtime_model_simple_model.png
           git commit -m "Update runtime_model [skip ci]" || echo "No changes to commit"
+          git pull --rebase
           git push
 
       - name: Upload model artifact
