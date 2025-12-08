@@ -73,7 +73,7 @@ jobs:
           name: run_estimate
           path: ${{ github.workspace }}/run_estimate.csv
 
-  create-memory-model:
+  create-models:
     runs-on: ubuntu-latest
     needs: estimate-memory
     permissions:
@@ -94,7 +94,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run model estimator
+      - name: Run memory model estimator
         run: |
           docker pull ${{ env.REGISTRY }}/tercen/model_estimator:main
           docker run --rm -v ${{ github.workspace }}:/data \
@@ -103,50 +103,9 @@ jobs:
             --ignore-columns runtime_seconds \
             --output /data/memory_model \
             /data/run_estimate.csv
-          
 
-      - name: Commit model files
+      - name: Run runtime model estimator
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase
-          git add memory_model_model.json memory_model_simple_model.png
-          git commit -m "Update memory model [skip ci]" || echo "No changes to commit"
-          git pull --rebase
-          git push
-
-      - name: Upload model artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: memory-model
-          path: |
-            ${{ github.workspace }}/memory_model_model.json
-            ${{ github.workspace }}/memory_model_simple_model.png
-
-  create-runtime-model:
-    runs-on: ubuntu-latest
-    needs: create-memory-model
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: run_estimate
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3.3.0
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run model estimator
-        run: |
-          docker pull ${{ env.REGISTRY }}/tercen/model_estimator:main
           docker run --rm -v ${{ github.workspace }}:/data \
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
             --target-column runtime_seconds \
@@ -154,21 +113,22 @@ jobs:
             --output /data/runtime_model \
             /data/run_estimate.csv
 
-
-      - name: Commit model files
+      - name: Commit all model files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git pull --rebase
-          git add runtime_model_model.json runtime_model_simple_model.png
-          git commit -m "Update runtime_model [skip ci]" || echo "No changes to commit"
+          git add memory_model_model.json memory_model_simple_model.png runtime_model_model.json runtime_model_simple_model.png
+          git commit -m "Update memory and runtime models [skip ci]" || echo "No changes to commit"
           git pull --rebase
           git push
 
-      - name: Upload model artifact
+      - name: Upload model artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: runtime-model
+          name: models
           path: |
+            ${{ github.workspace }}/memory_model_model.json
+            ${{ github.workspace }}/memory_model_simple_model.png
             ${{ github.workspace }}/runtime_model_model.json
             ${{ github.workspace }}/runtime_model_simple_model.png
