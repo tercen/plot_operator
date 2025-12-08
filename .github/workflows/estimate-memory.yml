@@ -117,10 +117,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase
           git add memory_model_model.json memory_model_simple_model.png runtime_model_model.json runtime_model_simple_model.png
           git commit -m "Update memory and runtime models [skip ci]" || echo "No changes to commit"
-          git pull --rebase
           git push
 
       - name: Upload model artifacts
