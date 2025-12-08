@@ -2,33 +2,14 @@ name: Estimate Memory
 
 on:
   workflow_dispatch:
-    inputs:
-      service_uri:
-        description: 'Local Tercen service'
-        required: true
-        type: string
-        default: 'http://127.0.0.1:5400'
-      repo_url:
-        description: 'GitHub repository URL of the operator to test'
-        required: true
-        type: string
-        default: 'https://github.com/tercen/plot_operator'
-      repo_branch:
-        description: 'GitHub repository URL of the operator to test'
-        required: true
-        type: string
-        default: 'master'
-      team_name:
-        description: 'Team name for project and workflow ownership'
-        required: true
-        type: string
-        default: 'test'
 
-
-# Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
+# Defines environment variables for the workflow
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  SERVICE_URI: 'http://127.0.0.1:5400'
+  REPO_URL: 'https://github.com/tercen/plot_operator'
+  REPO_BRANCH: 'mem_estimate'
+  TEAM_NAME: 'test'
 
 
 jobs:
@@ -55,10 +36,10 @@ jobs:
             ${{ env.REGISTRY }}/tercen/memory_estimator:main \
             --username ${{ secrets.TERCEN_USER }} \
             --password ${{ secrets.TERCEN_PASSW }} \
-            --repo-url ${{ inputs.repo_url }} \
-            --repo-branch ${{ inputs.repo_branch }} \
-            --team-name ${{ inputs.team_name }} \
-            --tercen-url ${{ inputs.service_uri }} \
+            --repo-url ${{ env.REPO_URL }} \
+            --repo-branch ${{ env.REPO_BRANCH }} \
+            --team-name ${{ env.TEAM_NAME }} \
+            --tercen-url ${{ env.SERVICE_URI }} \
             --output /output/run_estimate.csv
 
 
