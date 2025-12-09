@@ -81,6 +81,7 @@ jobs:
           docker run --rm -v ${{ github.workspace }}:/data \
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
             --target-column estimated_ram_mb \
+            --max-delta-aic 8 \
             --ignore-columns runtime_seconds \
             --output /data/memory_model \
             /data/run_estimate.csv
@@ -91,6 +92,7 @@ jobs:
             ${{ env.REGISTRY }}/tercen/model_estimator:main \
             --target-column runtime_seconds \
             --ignore-columns estimated_ram_mb \
+            --max-delta-aic 8 \
             --output /data/runtime_model \
             /data/run_estimate.csv
 
