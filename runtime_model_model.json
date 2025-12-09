@@ -1,11 +1,13 @@
 {
-  "intercept": 4.003240530198582,
-  "offset": 1.550713814455829,
+  "kind": "OperatorEstimateModel",
+  "intercept": 3.5861016500829064,
+  "offset": 1.4474931188533482,
   "features": [
     {
-      "feature": "n_obs",
+      "kind": "Feature",
+      "name": "n_obs",
       "coefficient": 1.0,
-      "exponent": 0.10462544118784817
+      "exponent": 0.11552121892992187
     }
   ]
 }
