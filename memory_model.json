@@ -29,37 +29,37 @@
     },
     {
       "kind": "Feature",
-      "name": "n_obs_x_n_sp",
+      "name": "n_obs_x_||_sp",
       "coefficient": 1.0,
       "exponent": -0.04410486678192127
     },
     {
       "kind": "Feature",
-      "name": "n_obs_x_settings.plot.height",
+      "name": "n_obs_||_settings.plot.height",
       "coefficient": 1.0,
       "exponent": 1.3114509478384662e-15
     },
     {
       "kind": "Feature",
-      "name": "n_obs_x_settings.plot.width",
+      "name": "n_obs_||_settings.plot.width",
       "coefficient": 1.0,
       "exponent": 9.471590178833367e-16
     },
     {
       "kind": "Feature",
-      "name": "n_sp_x_settings.plot.height",
+      "name": "n_sp_||_settings.plot.height",
       "coefficient": 1.0,
       "exponent": 0.11600095405747579
     },
     {
       "kind": "Feature",
-      "name": "n_sp_x_settings.plot.width",
+      "name": "n_sp_||_settings.plot.width",
       "coefficient": 1.0,
       "exponent": 0.11600095405747646
     },
     {
       "kind": "Feature",
-      "name": "settings.plot.height_x_settings.plot.width",
+      "name": "settings.plot.height_||_settings.plot.width",
       "coefficient": 1.0,
       "exponent": 5.329070518200751e-15
     }
