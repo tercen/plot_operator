@@ -5,13 +5,13 @@
   "features": [
     {
       "kind": "Feature",
-      "name": "n_obs",
+      "name": "n_main",
       "coefficient": 1.0,
       "exponent": 0.07902531269553952
     },
     {
       "kind": "Feature",
-      "name": "n_sp",
+      "name": "n_rows",
       "coefficient": 1.0,
       "exponent": -1.1169288703475242
     },
@@ -29,31 +29,31 @@
     },
     {
       "kind": "Feature",
-      "name": "n_obs_x_||_sp",
+      "name": "n_main_x_||_sp",
       "coefficient": 1.0,
       "exponent": -0.04410486678192127
     },
     {
       "kind": "Feature",
-      "name": "n_obs_||_settings.plot.height",
+      "name": "n_main_||_settings.plot.height",
       "coefficient": 1.0,
       "exponent": 1.3114509478384662e-15
     },
     {
       "kind": "Feature",
-      "name": "n_obs_||_settings.plot.width",
+      "name": "n_main_||_settings.plot.width",
       "coefficient": 1.0,
       "exponent": 9.471590178833367e-16
     },
     {
       "kind": "Feature",
-      "name": "n_sp_||_settings.plot.height",
+      "name": "n_rows_||_settings.plot.height",
       "coefficient": 1.0,
       "exponent": 0.11600095405747579
     },
     {
       "kind": "Feature",
-      "name": "n_sp_||_settings.plot.width",
+      "name": "n_rows_||_settings.plot.width",
       "coefficient": 1.0,
       "exponent": 0.11600095405747646
     },
