@@ -83,7 +83,7 @@ jobs:
             --target-column estimated_ram_mb \
             --max-delta-aic 8 \
             --ignore-columns runtime_seconds \
-            --output /data/memory_model \
+            --output /data/memory \
             /data/run_estimate.csv
 
       - name: Run runtime model estimator
@@ -93,7 +93,7 @@ jobs:
             --target-column runtime_seconds \
             --ignore-columns estimated_ram_mb \
             --max-delta-aic 8 \
-            --output /data/runtime_model \
+            --output /data/runtime \
             /data/run_estimate.csv
 
       - name: Commit all model files
