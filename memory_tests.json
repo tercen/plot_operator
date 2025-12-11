@@ -1,8 +1,8 @@
 {
   "data_params": {
-    "n_obs": "500:3:15000",
-    "n_sp": "2:3:6",
-    "n_variable": "2:3:6"
+    "n_obs": "200:4:10000",
+    "n_sp": "2:2:4",
+    "n_variable": "2:2:4"
   },
   "ram_limits": {
     "min_ram_mb": 100,
@@ -10,7 +10,7 @@
     "threshold_mb": 100
   },
   "operator_settings": {
-    "plot.width": "300:2:1200",
-    "plot.height": "300:2:1200"
+    "plot.width": "300:1:1200",
+    "plot.height": "300:1:1200"
   }
 }
