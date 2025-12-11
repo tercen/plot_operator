@@ -100,7 +100,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add memory_model_model.json memory_model_simple_model.png runtime_model_model.json runtime_model_simple_model.png
+          git add memory_model.json memory_simple_model.png runtime_model.json runtime_simple_model.png
           git commit -m "Update memory and runtime models [skip ci]" || echo "No changes to commit"
           git push
 
@@ -109,7 +109,7 @@ jobs:
         with:
           name: models
           path: |
-            ${{ github.workspace }}/memory_model_model.json
-            ${{ github.workspace }}/memory_model_simple_model.png
-            ${{ github.workspace }}/runtime_model_model.json
-            ${{ github.workspace }}/runtime_model_simple_model.png
+            ${{ github.workspace }}/memory_model.json
+            ${{ github.workspace }}/memory_simple_model.png
+            ${{ github.workspace }}/runtime_model.json
+            ${{ github.workspace }}/runtime_simple_model.png
