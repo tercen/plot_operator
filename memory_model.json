@@ -1,67 +1,25 @@
 {
   "kind": "OperatorEstimateModel",
-  "intercept": 4681.800789627141,
-  "offset": 34.33466131896171,
+  "intercept": 626.5708813005439,
+  "offset": 61.61110211748348,
   "features": [
     {
       "kind": "Feature",
-      "name": "n_main",
+      "name": "n_obs",
       "coefficient": 1.0,
-      "exponent": 0.07902531269553952
+      "exponent": -0.03625687408963512
     },
     {
       "kind": "Feature",
-      "name": "n_rows",
+      "name": "n_variable",
       "coefficient": 1.0,
-      "exponent": -1.1169288703475242
+      "exponent": -0.3076277218523522
     },
     {
       "kind": "Feature",
-      "name": "settings.plot.height",
+      "name": "n_obs_||_n_variable",
       "coefficient": 1.0,
-      "exponent": -0.2078458078720118
-    },
-    {
-      "kind": "Feature",
-      "name": "settings.plot.width",
-      "coefficient": 1.0,
-      "exponent": -0.20784580787199758
-    },
-    {
-      "kind": "Feature",
-      "name": "n_main_||_n_rows",
-      "coefficient": 1.0,
-      "exponent": -0.04410486678192127
-    },
-    {
-      "kind": "Feature",
-      "name": "n_main_||_settings.plot.height",
-      "coefficient": 1.0,
-      "exponent": 1.3114509478384662e-15
-    },
-    {
-      "kind": "Feature",
-      "name": "n_main_||_settings.plot.width",
-      "coefficient": 1.0,
-      "exponent": 9.471590178833367e-16
-    },
-    {
-      "kind": "Feature",
-      "name": "n_rows_||_settings.plot.height",
-      "coefficient": 1.0,
-      "exponent": 0.11600095405747579
-    },
-    {
-      "kind": "Feature",
-      "name": "n_rows_||_settings.plot.width",
-      "coefficient": 1.0,
-      "exponent": 0.11600095405747646
-    },
-    {
-      "kind": "Feature",
-      "name": "settings.plot.height_||_settings.plot.width",
-      "coefficient": 1.0,
-      "exponent": 5.329070518200751e-15
+      "exponent": 0.05230761244725074
     }
   ]
 }
