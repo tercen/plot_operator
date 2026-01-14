@@ -252,10 +252,10 @@
                 "kind": "MetaFactor",
                 "name": "X Axis",
                 "type": "",
-                "description": "Factor to use for the graph's X axis.",
+                "description": "Factor to use for the graph's X axis (optional).",
                 "ontologyMapping": "x-axis",
                 "crosstabMapping": "x",
-                "cardinality": "1",
+                "cardinality": "0..1",
                 "factors": []
               },
               {
