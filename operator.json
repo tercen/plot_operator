@@ -1,201 +1,209 @@
 {
   "name": "Plot",
   "description": "Export a chart based on the crosstab projection.",
-  "tags": ["data visualisation", "export", "reporting", "workflow"],
-  "authors": ["tercen"],
-  "container":"ghcr.io/tercen/plot_operator:1.0.10",
-  "urls": ["https://github.com/tercen/plot_operator"],
-  "properties": [
-  {
-    "kind": "EnumeratedProperty",
-    "name": "plot_type",
-    "defaultValue": "png",
-    "values": [
-      "png",
-      "pdf",
-      "svg",
-      "svg2"
-    ],
-    "description": "Output file format."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "file.name.prefix",
-    "defaultValue": "Tercen_Plot",
-    "description": "Plot output file name prefix."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "plot.width",
-    "defaultValue": "",
-    "description": "Plot width (pixels). If left empty, crosstab dimensions will be used."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "plot.height",
-    "defaultValue": "",
-    "description": "Plot height (pixels). If left empty, crosstab dimensions will be used."
-  },
-  {
-    "kind": "DoubleProperty",
-    "name": "base.size",
-    "defaultValue": 11,
-    "description": "Text elements base size."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "x_range",
-    "defaultValue": "",
-    "description": "X axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10'). One of the two values can be set to NA to use the lower or upper limit of the data."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "y_range",
-    "defaultValue": "",
-    "description": "Y axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10'). One of the two values can be set to NA to use the lower or upper limit of the data."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "xlab",
-    "defaultValue": "",
-    "description": "X axis label."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "ylab",
-    "defaultValue": "",
-    "description": "Y axis label."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "title",
-    "defaultValue": "",
-    "description": "Plot title."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "subtitle",
-    "defaultValue": "",
-    "description": "Plot subtitle."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "caption",
-    "defaultValue": "",
-    "description": "Plot caption."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "legend.title",
-    "defaultValue": "",
-    "description": "Color legend title. If left blank, the name of the color factors will be used."
-  },
-  {
-    "kind": "EnumeratedProperty",
-    "name": "bar.position",
-    "defaultValue": "dodge",
-    "values": [
-      "dodge",
-      "stack",
-      "fill"
-    ],
-    "description": "Bar position - any of dodge, stack or fill."
-  },
-  {
-    "kind": "EnumeratedProperty",
-    "name": "theme",
-    "defaultValue": "light",
-    "values": [
-      "gray",
-      "bw",
-      "linedraw",
-      "light",
-      "dark",
-      "minimal",
-      "classic",
-      "void"
-    ],
-    "description": "Theme (from ggplot2)."
-  },
-  {
-    "kind": "EnumeratedProperty",
-    "name": "scales",
-    "defaultValue": "fixed",
-    "values": [
-      "fixed",
-      "free",
-      "free_x",
-      "free_y"
-    ],
-    "description": "Scales mode (from ggplot2)."
-  },
-  {
-    "kind": "EnumeratedProperty",
-    "name": "color_scales",
-    "defaultValue": "fixed",
-    "values": [
-      "fixed",
-      "per_plot"
-    ],
-    "description": "Scales mode (from ggplot2)."
-  },
-  {
-    "kind": "BooleanProperty",
-    "name": "rotate_x_axis",
-    "defaultValue": false,
-    "description": "Rotates the x axis labels by a 90 degrees angle."
-  },
-  {
-    "kind": "BooleanProperty",
-    "name": "wrap.1d",
-    "defaultValue": true,
-    "description": "Wraps a 1d sequence of panels into 2d if no row or column factor is specified."
-  },
-  {
-    "kind": "BooleanProperty",
-    "name": "flip",
-    "defaultValue": false,
-    "description": "Whether to flip x and y axes."
-  },
-  {
-    "kind": "BooleanProperty",
-    "name": "split_cells",
-    "defaultValue": false,
-    "description": "Whether to produce one plot per cell or not. Plots will be output as a zip file."
-  },
-  {
-    "kind": "DoubleProperty",
-    "name": "n_cells_max",
-    "defaultValue": 50,
-    "description": "Maximum number of cell to consider for a single plot. Above this threshold, split_cells setting will be set to true."
-  },
-  {
-    "kind": "EnumeratedProperty",
-    "name": "heatmap_annotation",
-    "defaultValue": "none",
-    "values": [
-      "none",
-      "rows",
-      "columns",
-      "both"
-    ],
-    "description": "Add axes labels on a heatmap based on row and columns factors."
-  },
-  {
-    "kind": "StringProperty",
-    "name": "default.color",
-    "defaultValue": "#36454f",
-    "description": "Default color used for standard elements."
-  },
-  {
-    "kind": "DoubleProperty",
-    "name": "legend.point.scale",
-    "defaultValue": 1.0,
-    "description": "Scale factor for legend point size relative to plot point size. Values > 1 make legend points larger, values < 1 make them smaller."
-  }
-  
+  "tags": [
+    "data visualisation",
+    "export",
+    "reporting",
+    "workflow"
   ],
-    "operatorSpec" : {
+  "authors": [
+    "tercen"
+  ],
+  "container": "ghcr.io/tercen/plot_operator:1.0.10",
+  "urls": [
+    "https://github.com/tercen/plot_operator"
+  ],
+  "properties": [
+    {
+      "kind": "EnumeratedProperty",
+      "name": "plot_type",
+      "defaultValue": "png",
+      "values": [
+        "png",
+        "pdf",
+        "svg",
+        "svg2"
+      ],
+      "description": "Output file format."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "file.name.prefix",
+      "defaultValue": "Tercen_Plot",
+      "description": "Plot output file name prefix."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "plot.width",
+      "defaultValue": "",
+      "description": "Plot width (pixels). If left empty, crosstab dimensions will be used."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "plot.height",
+      "defaultValue": "",
+      "description": "Plot height (pixels). If left empty, crosstab dimensions will be used."
+    },
+    {
+      "kind": "DoubleProperty",
+      "name": "base.size",
+      "defaultValue": 11,
+      "description": "Text elements base size."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "x_range",
+      "defaultValue": "",
+      "description": "X axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10'). One of the two values can be set to NA to use the lower or upper limit of the data."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "y_range",
+      "defaultValue": "",
+      "description": "Y axis range. If empty (default), will use the data's range. If customise, must be provided as a comma-separated list of values (e.g. '0, 10'). One of the two values can be set to NA to use the lower or upper limit of the data."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "xlab",
+      "defaultValue": "",
+      "description": "X axis label."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "ylab",
+      "defaultValue": "",
+      "description": "Y axis label."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "title",
+      "defaultValue": "",
+      "description": "Plot title."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "subtitle",
+      "defaultValue": "",
+      "description": "Plot subtitle."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "caption",
+      "defaultValue": "",
+      "description": "Plot caption."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "legend.title",
+      "defaultValue": "",
+      "description": "Color legend title. If left blank, the name of the color factors will be used."
+    },
+    {
+      "kind": "EnumeratedProperty",
+      "name": "bar.position",
+      "defaultValue": "dodge",
+      "values": [
+        "dodge",
+        "stack",
+        "fill"
+      ],
+      "description": "Bar position - any of dodge, stack or fill."
+    },
+    {
+      "kind": "EnumeratedProperty",
+      "name": "theme",
+      "defaultValue": "light",
+      "values": [
+        "gray",
+        "bw",
+        "linedraw",
+        "light",
+        "dark",
+        "minimal",
+        "classic",
+        "void"
+      ],
+      "description": "Theme (from ggplot2)."
+    },
+    {
+      "kind": "EnumeratedProperty",
+      "name": "scales",
+      "defaultValue": "fixed",
+      "values": [
+        "fixed",
+        "free",
+        "free_x",
+        "free_y"
+      ],
+      "description": "Scales mode (from ggplot2)."
+    },
+    {
+      "kind": "EnumeratedProperty",
+      "name": "color_scales",
+      "defaultValue": "fixed",
+      "values": [
+        "fixed",
+        "per_plot"
+      ],
+      "description": "Scales mode (from ggplot2)."
+    },
+    {
+      "kind": "BooleanProperty",
+      "name": "rotate_x_axis",
+      "defaultValue": false,
+      "description": "Rotates the x axis labels by a 90 degrees angle."
+    },
+    {
+      "kind": "BooleanProperty",
+      "name": "wrap.1d",
+      "defaultValue": true,
+      "description": "Wraps a 1d sequence of panels into 2d if no row or column factor is specified."
+    },
+    {
+      "kind": "BooleanProperty",
+      "name": "flip",
+      "defaultValue": false,
+      "description": "Whether to flip x and y axes."
+    },
+    {
+      "kind": "BooleanProperty",
+      "name": "split_cells",
+      "defaultValue": false,
+      "description": "Whether to produce one plot per cell or not. Plots will be output as a zip file."
+    },
+    {
+      "kind": "DoubleProperty",
+      "name": "n_cells_max",
+      "defaultValue": 50,
+      "description": "Maximum number of cell to consider for a single plot. Above this threshold, split_cells setting will be set to true."
+    },
+    {
+      "kind": "EnumeratedProperty",
+      "name": "heatmap_annotation",
+      "defaultValue": "none",
+      "values": [
+        "none",
+        "rows",
+        "columns",
+        "both"
+      ],
+      "description": "Add axes labels on a heatmap based on row and columns factors."
+    },
+    {
+      "kind": "StringProperty",
+      "name": "default.color",
+      "defaultValue": "#36454f",
+      "description": "Default color used for standard elements."
+    },
+    {
+      "kind": "DoubleProperty",
+      "name": "legend.point.scale",
+      "defaultValue": 1.0,
+      "description": "Scale factor for legend point size relative to plot point size. Values > 1 make legend points larger, values < 1 make them smaller."
+    }
+  ],
+  "operatorSpec": {
     "kind": "OperatorSpec",
     "ontologyUri": "https://tercen.com/_ontology/tercen",
     "ontologyVersion": "0.0.1",
@@ -218,7 +226,7 @@
             "name": "Rows",
             "type": "",
             "description": "Factor(s) to stratify per row.",
-            "ontologyMapping": "sample",
+            "ontologyMapping": "observation",
             "crosstabMapping": "row",
             "cardinality": "0..n",
             "factors": []
@@ -243,7 +251,7 @@
                 "name": "Y Axis",
                 "type": "numeric",
                 "description": "Factor to use for the graph's Y axis.",
-                "ontologyMapping": "y-axis",
+                "ontologyMapping": "measurement",
                 "crosstabMapping": "y",
                 "cardinality": "1",
                 "factors": []
@@ -253,7 +261,7 @@
                 "name": "X Axis",
                 "type": "",
                 "description": "Factor to use for the graph's X axis (optional).",
-                "ontologyMapping": "x-axis",
+                "ontologyMapping": "measurement",
                 "crosstabMapping": "x",
                 "cardinality": "0..1",
                 "factors": []
@@ -286,5 +294,3 @@
     "outputSpecs": []
   }
 }
-
-
