@@ -291,6 +291,42 @@
         ]
       }
     ],
-    "outputSpecsV2": []
+    "outputSpecsV2": [
+      {
+        "kind": "OperatorJoinSpec",
+        "description": "Visualization operator - outputs plot files",
+        "joinOperators": [
+          {
+            "kind": "JoinOperator",
+            "joinType": "left",
+            "leftPair": {
+              "kind": "ColumnPair",
+              "lColumns": [],
+              "rColumns": []
+            },
+            "rightRelation": {
+              "kind": "TableRelation",
+              "attributes": [
+                {
+                  "kind": "Attribute",
+                  "name": "documentId",
+                  "type": "string"
+                },
+                {
+                  "kind": "Attribute",
+                  "name": "mimetype",
+                  "type": "string"
+                },
+                {
+                  "kind": "Attribute",
+                  "name": "filename",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
   }
 }
