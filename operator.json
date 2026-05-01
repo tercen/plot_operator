@@ -10,7 +10,7 @@
   "authors": [
     "tercen"
   ],
-  "container": "ghcr.io/tercen/plot_operator:1.0.10",
+  "container": "ghcr.io/tercen/plot_operator",
   "urls": [
     "https://github.com/tercen/plot_operator"
   ],
