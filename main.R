@@ -71,13 +71,21 @@ hm <- any(chart_types == "ChartHeatmap")
 if(is_2d_histogram) chart_types <- "2D_Histogram"
 
 if(input.par$split_cells | has_page) {
-  
-  if(!hm & n_cells > 1000) stop("Too many cells (> 1000) to use this operator.")
-  
+
+  # The 1000-cell cap is only meaningful when split_cells = TRUE — in
+  # that branch each (.ri, .ci) becomes its own file, and a zip with
+  # >1000 individual files isn't usable. With has_page = TRUE, panels
+  # are rendered grouped per page (and the facet uses drop = TRUE so
+  # only populated cells are drawn), so the schema-level cap doesn't
+  # apply.
+  if(input.par$split_cells & !hm & n_cells > 1000) {
+    stop("Too many cells (> 1000) to use this operator with split_cells.")
+  }
+
   if(has_page) {
     df <- df %>% group_by(across(all_of(page_factor_names)))
   } else {
-    df <- df %>% group_by(.ci, .ri) 
+    df <- df %>% group_by(.ci, .ri)
   }
   
   plt_names <- df %>% 

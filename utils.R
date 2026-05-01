@@ -118,14 +118,22 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
       ~ .ri + .ci,
       labeller = labeller(.ri = row_labs, .ci = col_labs),
       scales = scales_mode,
-      switch = "y"
+      switch = "y",
+      drop = TRUE
     )
   } else {
+    # drop = TRUE removes empty (.ri, .ci) combinations so the rendered
+    # plot is sized to the *populated* cells rather than the schema's
+    # full row × column cardinality. Without this a page subset with
+    # only 12 wells × 50 markers populated still draws 24 × 112 panels
+    # of which most are empty, easily blowing past ggsave's 50-inch
+    # limit on a workflow where the row/col axes are wide.
     facet <- facet_grid(
       .ri ~ .ci,
       labeller = labeller(.rows = row_labs, .cols = col_labs),
       scales = scales_mode,
-      switch = "y"
+      switch = "y",
+      drop = TRUE
     )
   }
   return(facet)
