@@ -621,7 +621,12 @@ generate_plot <-
       height = input.par$plot.height / 144,
       units = "in",
       dpi = 144,
-      device = input.par$plot_type
+      device = input.par$plot_type,
+      # Auto-sizing scales with .ri/.ci counts; for crosstabs with
+      # many populated cells (e.g. 24x112 wells) the computed
+      # dimensions can exceed ggsave's default 50-inch safety
+      # limit. Disable the cap.
+      limitsize = FALSE
     )
     
     return(tibble(plot_file = tmp, plot.width = input.par$plot.width, plot.height = input.par$plot.height))
