@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Resolve annotated tag SHA
         id: tagsha
         # Tercen's installer derives the container tag from the GitHub
@@ -33,9 +31,20 @@ jobs:
         # annotated tags (not the commit SHA). Without this, the image
         # CI pushes (`:<commit-sha>`) and the image Tercen tries to pull
         # (`:<tag-sha>`) don't match.
+        #
+        # We must use the GitHub API rather than `git rev-parse`:
+        # actions/checkout@v4 stores the tag locally as a lightweight
+        # ref (pointing straight at the commit), so the annotated tag
+        # object isn't available in-tree. The /git/refs/tags endpoint
+        # returns .object.sha — the tag-object SHA when annotated, the
+        # commit SHA when lightweight — so the same code works for
+        # both tag styles.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag_sha=$(git rev-parse --short=7 "${GITHUB_REF#refs/tags/}")
-          echo "short=$tag_sha" >> "$GITHUB_OUTPUT"
+          tag="${GITHUB_REF#refs/tags/}"
+          sha=$(gh api "repos/${GITHUB_REPOSITORY}/git/refs/tags/${tag}" --jq '.object.sha')
+          echo "short=${sha:0:7}" >> "$GITHUB_OUTPUT"
       - name: Update container in operator JSON
         run: |
           jq --arg variable "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF##*/}" '.container = $variable' operator.json
