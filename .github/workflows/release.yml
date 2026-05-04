@@ -24,6 +24,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Resolve annotated tag SHA
+        id: tagsha
+        # Tercen's installer derives the container tag from the GitHub
+        # zipball directory name, which uses the *tag object* SHA for
+        # annotated tags (not the commit SHA). Without this, the image
+        # CI pushes (`:<commit-sha>`) and the image Tercen tries to pull
+        # (`:<tag-sha>`) don't match.
+        run: |
+          tag_sha=$(git rev-parse --short=7 "${GITHUB_REF#refs/tags/}")
+          echo "short=$tag_sha" >> "$GITHUB_OUTPUT"
       - name: Update container in operator JSON
         run: |
           jq --arg variable "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF##*/}" '.container = $variable' operator.json
@@ -43,6 +55,7 @@ jobs:
           tags: |
             type=pep440,pattern={{version}}
             type=sha,prefix=,format=short
+            type=raw,value=${{ steps.tagsha.outputs.short }}
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
