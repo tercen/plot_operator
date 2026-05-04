@@ -12,7 +12,7 @@ RUN installr -d ggplot2 ragg dplyr svglite jsonlite scales tidyr zip
 FROM tercen/runtime-r44-minimal-plot:4.4.3-2
 
 COPY --from=builder /usr/local/lib/R/library /usr/local/lib/R/library
-COPY main.R utils.R utils_colors.R palettes.json /operator/
+COPY main.R utils.R utils_colors.R palettes.json operator.json /operator/
 WORKDIR /operator
 
 ENV TERCEN_SERVICE_URI=https://tercen.com
