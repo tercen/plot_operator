@@ -173,6 +173,12 @@
       "description": "Whether to produce one plot per cell or not. Plots will be output as a zip file."
     },
     {
+      "kind": "BooleanProperty",
+      "name": "limit_size",
+      "defaultValue": false,
+      "description": "Enforce ggplot2's 50-inch ggsave safety cap. Default false: the operator already converts pixels to inches, so the cap blocks legitimately large many-cell crosstabs. Set true to re-enable the cap."
+    },
+    {
       "kind": "DoubleProperty",
       "name": "n_cells_max",
       "defaultValue": 50,
