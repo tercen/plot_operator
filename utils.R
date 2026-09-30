@@ -118,7 +118,7 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
       ~ .ri + .ci,
       labeller = labeller(.ri = row_labs, .ci = col_labs),
       scales = scales_mode,
-      switch = "y",
+      strip.position = "left",  # facet_wrap(switch=) is defunct since ggplot2 3.5
       drop = TRUE
     )
   } else {
