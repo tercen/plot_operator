@@ -24,7 +24,9 @@ is_2d_histogram <- lapply(ctx$schema$columns, "[[", "name") %>%
   `%in%`(c(".histogram_count", ".x_bin_size", ".y_bin_size"), .) %>%
   all()
 
-ds <- get_data_step(ctx)
+wf <- get_workflow(ctx)
+ds <- get_data_step(ctx, wf)
+input.par$file.name.prefix <- plot_file_prefix(input.par$file.name.prefix, wf$name, ds$name)
 df <- getValues(ctx, is_2d_histogram)
 pl <- get_palettes(ds)
 

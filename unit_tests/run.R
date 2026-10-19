@@ -178,5 +178,20 @@ check("theme: minimal by default", identical(theme$defaultValue, "minimal"))
 check("theme: every value is a ggplot2 theme",
       all(vapply(unlist(theme$values), function(t) exists(paste0("theme_", t), mode = "function"), TRUE)))
 
+cat("-- output file name\n")
+check("default: <workflow>_<step>_plot",
+      identical(plot_file_prefix("", "PTK analysis", "Plot bars"), "PTK_analysis_Plot_bars_plot"))
+check("the old default Tercen_Plot (stored by existing steps) is treated as the default",
+      identical(plot_file_prefix("Tercen_Plot", "wf", "step"), "wf_step_plot"))
+check("a prefix set by the user is kept",
+      identical(plot_file_prefix("my figure", "wf", "step"), "my figure"))
+check("no slashes or unsafe characters: they become _",
+      identical(plot_file_prefix("", "a/b\\c: d*?", "CRP-A 1/PGI2 100"), "a_b_c_d_CRP-A_1_PGI2_100_plot"))
+check("missing names are left out", identical(plot_file_prefix("", NULL, "step"), "step_plot") &&
+        identical(plot_file_prefix(NULL, "", ""), "plot"))
+check("long names are cut", nchar(plot_file_prefix("", strrep("w", 300), strrep("s", 300))) == 80 + 1 + 80 + 5)
+default_prefix <- Find(function(p) p$name == "file.name.prefix", props)$defaultValue
+check("operator.json: the default prefix is empty", identical(default_prefix, ""))
+
 cat("\n", length(failures), " failed\n", sep = "")
 if (length(failures)) quit(status = 1)

@@ -28,8 +28,11 @@ get_step_id <- function(ctx) {
   }
 }
 
-get_data_step <- function(ctx) {
-  wf <- ctx$client$workflowService$get(get_workflow_id(ctx))
+get_workflow <- function(ctx) {
+  ctx$client$workflowService$get(get_workflow_id(ctx))
+}
+
+get_data_step <- function(ctx, wf = get_workflow(ctx)) {
   ds <-
     Find(function(s)
       identical(s$id, get_step_id(ctx)), wf$steps)
@@ -254,6 +257,32 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
 }
 
 
+
+#####
+### Output file name
+
+# The value every step created before 1.0.20 stores for file.name.prefix (the
+# old default). It is treated like an empty prefix: name the file after the step.
+LEGACY_FILE_PREFIX <- "Tercen_Plot"
+
+# One part of a file name: anything other than letters, digits, '.', '-' and
+# '_' (spaces, slashes, ...) becomes '_', and long names are cut.
+safe_file_part <- function(x, max_chars = 80) {
+  if (is.null(x) || length(x) == 0 || is.na(x[1])) return("")
+  x <- gsub("[^A-Za-z0-9._-]+", "_", as.character(x[1]))
+  x <- gsub("^[_.]+|_+$", "", x)
+  substr(x, 1, max_chars)
+}
+
+# File name prefix of the plot: the file.name.prefix setting when one was set,
+# otherwise <workflow>_<step>_plot.
+plot_file_prefix <- function(prefix, workflow_name, step_name) {
+  if (!is.null(prefix) && nzchar(prefix) && prefix != LEGACY_FILE_PREFIX) {
+    return(prefix)
+  }
+  parts <- c(safe_file_part(workflow_name), safe_file_part(step_name), "plot")
+  paste(parts[nzchar(parts)], collapse = "_")
+}
 
 #####
 ### Bar placement
