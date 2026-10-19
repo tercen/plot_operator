@@ -394,12 +394,17 @@ generate_plot <-
             )
           }
           if (type == "ChartBar") {
-            if (!ctx$hasXAxis && input.par$bar.position %in% c("stack", "fill")) {
-              # No x axis: every value of a cell sits at its own crosstab
-              # position, so there is nothing at a shared x to stack or fill.
-              # Put the whole cell on one bar and stack it in crosstab order
-              # (first crosstab position at the bottom).
-              df_plot <- df_plot %>% mutate(.stack_level = .x, .x = 1)
+            # Stack and fill need values that share an x position. Without an
+            # x axis, or when the x axis gives every value of a cell its own
+            # position (e.g. the colour factor on x), nothing shares one: draw
+            # the whole cell as one bar instead, in x order (crosstab order
+            # without an x axis), the first position at the bottom. When values
+            # do share an x, ggplot stacks them per x position as before.
+            one_value_per_x <- !ctx$hasXAxis ||
+              all(dplyr::count(df_plot, .ri, .ci, .x)$n == 1)
+            if (one_value_per_x && input.par$bar.position %in% c("stack", "fill")) {
+              df_plot <- df_plot %>%
+                mutate(.stack_level = as.integer(factor(.x)), .x = 1)
               stack_pos <- if (input.par$bar.position == "fill") {
                 position_fill(reverse = TRUE)
               } else {
