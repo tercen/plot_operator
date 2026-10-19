@@ -182,10 +182,19 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
   if (ctx$hasXAxis) {
     data$.x <- select(ctx, .x)[[".x"]]
   } else {
-    data <- data %>%
-      group_by(.ci, .ri) %>%
-      mutate(.x = row_number()) %>%
-      ungroup()
+    # No x axis: use each value's position in the crosstab itself. The server
+    # computes .xLevels per cell, so bars come out in the order the crosstab
+    # view shows them (by magnitude). Counting rows here instead gave whatever
+    # order the table was read in.
+    qt_names <- unlist(lapply(ctx$schema$columns, "[[", "name"))
+    if (!ctx$isPairwise && ".xLevels" %in% qt_names) {
+      data$.x <- as.integer(select(ctx, .xLevels)[[".xLevels"]]) + 1L
+    } else {
+      data <- data %>%
+        group_by(.ci, .ri) %>%
+        mutate(.x = row_number()) %>%
+        ungroup()
+    }
   }
   
   if (length(ctx$colors))
@@ -385,14 +394,36 @@ generate_plot <-
             )
           }
           if (type == "ChartBar") {
-            plt <- plt + geom_bar(
-              data = df_plot,
-              position = pos,
-              stat = "identity",
-              size = 0.5 * chart_sizes[j] / size_scale_factor,
-              width = 0.5,
-              color = default_color
-            )
+            if (!ctx$hasXAxis && input.par$bar.position %in% c("stack", "fill")) {
+              # No x axis: every value of a cell sits at its own crosstab
+              # position, so there is nothing at a shared x to stack or fill.
+              # Put the whole cell on one bar and stack it in crosstab order
+              # (first crosstab position at the bottom).
+              df_plot <- df_plot %>% mutate(.stack_level = .x, .x = 1)
+              stack_pos <- if (input.par$bar.position == "fill") {
+                position_fill(reverse = TRUE)
+              } else {
+                position_stack(reverse = TRUE)
+              }
+              plt <- plt + geom_bar(
+                data = df_plot,
+                mapping = aes(group = .stack_level),
+                position = stack_pos,
+                stat = "identity",
+                size = 0.5 * chart_sizes[j] / size_scale_factor,
+                width = 0.5,
+                color = default_color
+              )
+            } else {
+              plt <- plt + geom_bar(
+                data = df_plot,
+                position = pos,
+                stat = "identity",
+                size = 0.5 * chart_sizes[j] / size_scale_factor,
+                width = 0.5,
+                color = default_color
+              )
+            }
           }
           if (type == "2D_Histogram") {
             plt <- plt + geom_rect(
