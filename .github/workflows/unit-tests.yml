@@ -1,0 +1,24 @@
+name: Unit tests
+
+# Functional tests of the plotting logic (unit_tests/run.R), run inside the
+# operator image built from this commit, so they use the same R and package
+# versions a release ships.
+on:
+  pull_request:
+  push:
+    branches: ['main', 'master']
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Build the operator image
+        run: docker build -t plot_operator:test .
+      - name: Run unit tests in the operator image
+        run: |
+          docker run --rm \
+            -v "$PWD/unit_tests:/operator/unit_tests:ro" \
+            --entrypoint R plot_operator:test \
+            --no-save --slave -f unit_tests/run.R
