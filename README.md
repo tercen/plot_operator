@@ -26,3 +26,23 @@ Output data|.
 ##### Details
 
 The operator maps the input data projected in Tercen to a ggplot chart.
+
+**Bar charts.** `bar.position` sets how the bars of a cell are drawn:
+
+* `dodge`: one bar per value, side by side.
+* `stack` and `fill`: values that share an x position are stacked; `fill` scales each stack to 1.
+  When no two values of a cell share an x position (no x axis, or the colour factor on x), the
+  whole cell is drawn as one stacked bar, first position at the bottom.
+
+The order of the bars, and of the layers of a stacked cell, is the x axis order. Without an x
+axis it is the crosstab order, by magnitude.
+
+##### Unit tests
+
+`unit_tests/run.R` checks the bar placement (order, stacking, fill) by building the bar layer and
+reading back what ggplot computes. It runs in the operator image, on every pull request
+(`.github/workflows/unit-tests.yml`) and locally:
+
+    docker build -t plot_operator:test .
+    docker run --rm -v "$PWD/unit_tests:/operator/unit_tests:ro" \
+      --entrypoint R plot_operator:test --no-save --slave -f unit_tests/run.R

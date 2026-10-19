@@ -187,14 +187,11 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
     # view shows them (by magnitude). Counting rows here instead gave whatever
     # order the table was read in.
     qt_names <- unlist(lapply(ctx$schema$columns, "[[", "name"))
+    x_levels <- NULL
     if (!ctx$isPairwise && ".xLevels" %in% qt_names) {
-      data$.x <- as.integer(select(ctx, .xLevels)[[".xLevels"]]) + 1L
-    } else {
-      data <- data %>%
-        group_by(.ci, .ri) %>%
-        mutate(.x = row_number()) %>%
-        ungroup()
+      x_levels <- select(ctx, .xLevels)[[".xLevels"]]
     }
+    data <- crosstab_x_position(data, x_levels)
   }
   
   if (length(ctx$colors))
@@ -257,6 +254,75 @@ getValues <- function(ctx, is_2d_histogram = FALSE) {
 }
 
 
+
+#####
+### Bar placement
+# Pure functions (a data frame in, a data frame or a ggplot layer out) so that
+# unit_tests/ can check them without a Tercen context.
+
+# x position of each value when the projection has no x axis. `x_levels` is the
+# crosstab's own position per cell (`.xLevels`, 0-based, by magnitude), so the
+# bars follow the crosstab view. Without it (pairwise projections), values are
+# numbered in read order within each cell.
+crosstab_x_position <- function(data, x_levels = NULL) {
+  if (!is.null(x_levels)) {
+    data$.x <- as.integer(x_levels) + 1L
+    return(data)
+  }
+  data %>%
+    group_by(.ci, .ri) %>%
+    mutate(.x = row_number()) %>%
+    ungroup()
+}
+
+# Stack and fill need values that share an x position. Without an x axis, or
+# when the x axis gives every value of a cell its own position (e.g. the colour
+# factor on x), nothing shares one: the whole cell is then drawn as one bar.
+# When values do share an x, ggplot stacks them per x position.
+collapse_bars <- function(df, has_x_axis, bar_position) {
+  if (!bar_position %in% c("stack", "fill")) return(FALSE)
+  !has_x_axis || all(dplyr::count(df, .ri, .ci, .x)$n == 1)
+}
+
+# One bar per cell: stack in x order (crosstab order without an x axis).
+stack_cells <- function(df) {
+  df %>% mutate(.stack_level = as.integer(factor(.x)), .x = 1)
+}
+
+# The bar layer. A collapsed cell stacks its values first position at the
+# bottom; otherwise the position is the bar.position setting.
+bar_layer <- function(df, collapsed, bar_position, dodge_width, size, color) {
+  if (collapsed) {
+    pos <- if (bar_position == "fill") {
+      position_fill(reverse = TRUE)
+    } else {
+      position_stack(reverse = TRUE)
+    }
+    return(geom_bar(
+      data = df,
+      mapping = aes(group = .stack_level),
+      position = pos,
+      stat = "identity",
+      size = size,
+      width = 0.5,
+      color = color
+    ))
+  }
+  pos <- switch(
+    bar_position,
+    "dodge" = position_dodge(width = dodge_width),
+    "stack" = "stack",
+    "fill" = "fill"
+  )
+  geom_bar(
+    data = df,
+    position = pos,
+    stat = "identity",
+    size = size,
+    width = 0.5,
+    color = color
+  )
+}
 
 get_axis_labels <- function(ctx, lab, type) {
   nms <- switch(
@@ -350,13 +416,6 @@ generate_plot <-
         )
       )
       
-      pos <- switch (
-        input.par$bar.position,
-        "dodge" = position_dodge(width = input.par$dodge.width),
-        "stack" = "stack",
-        "fill" = "fill"
-      )
-      
       for (j in seq_along(chart_types)) {
         type <- chart_types[j]
         df_plot <- df %>% filter(.axisIndex == j - 1L)
@@ -394,36 +453,16 @@ generate_plot <-
             )
           }
           if (type == "ChartBar") {
-            if (!ctx$hasXAxis && input.par$bar.position %in% c("stack", "fill")) {
-              # No x axis: every value of a cell sits at its own crosstab
-              # position, so there is nothing at a shared x to stack or fill.
-              # Put the whole cell on one bar and stack it in crosstab order
-              # (first crosstab position at the bottom).
-              df_plot <- df_plot %>% mutate(.stack_level = .x, .x = 1)
-              stack_pos <- if (input.par$bar.position == "fill") {
-                position_fill(reverse = TRUE)
-              } else {
-                position_stack(reverse = TRUE)
-              }
-              plt <- plt + geom_bar(
-                data = df_plot,
-                mapping = aes(group = .stack_level),
-                position = stack_pos,
-                stat = "identity",
-                size = 0.5 * chart_sizes[j] / size_scale_factor,
-                width = 0.5,
-                color = default_color
-              )
-            } else {
-              plt <- plt + geom_bar(
-                data = df_plot,
-                position = pos,
-                stat = "identity",
-                size = 0.5 * chart_sizes[j] / size_scale_factor,
-                width = 0.5,
-                color = default_color
-              )
-            }
+            collapsed <- collapse_bars(df_plot, ctx$hasXAxis, input.par$bar.position)
+            if (collapsed) df_plot <- stack_cells(df_plot)
+            plt <- plt + bar_layer(
+              df_plot,
+              collapsed = collapsed,
+              bar_position = input.par$bar.position,
+              dodge_width = input.par$dodge.width,
+              size = 0.5 * chart_sizes[j] / size_scale_factor,
+              color = default_color
+            )
           }
           if (type == "2D_Histogram") {
             plt <- plt + geom_rect(
