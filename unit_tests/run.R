@@ -167,5 +167,16 @@ df_2d <- data.frame(.ri = c(0, 0, 1, 1), .ci = c(0, 1, 0, 1), .x = 1, .y = 1:4)
 f <- facet_for(both, TRUE)
 check("rows and columns: a grid that draws", inherits(f, "FacetGrid") && draws(f, df_2d))
 
+cat("-- operator.json settings\n")
+props <- jsonlite::read_json("operator.json")$properties
+enum <- Filter(function(p) p$kind == "EnumeratedProperty", props)
+for (p in enum) {
+  check(paste0(p$name, ": the default is one of its values"), p$defaultValue %in% unlist(p$values))
+}
+theme <- Find(function(p) p$name == "theme", props)
+check("theme: minimal by default", identical(theme$defaultValue, "minimal"))
+check("theme: every value is a ggplot2 theme",
+      all(vapply(unlist(theme$values), function(t) exists(paste0("theme_", t), mode = "function"), TRUE)))
+
 cat("\n", length(failures), " failed\n", sep = "")
 if (length(failures)) quit(status = 1)
