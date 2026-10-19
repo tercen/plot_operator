@@ -30,8 +30,8 @@
     {
       "kind": "StringProperty",
       "name": "file.name.prefix",
-      "defaultValue": "Tercen_Plot",
-      "description": "Plot output file name prefix."
+      "defaultValue": "",
+      "description": "Plot output file name prefix. Empty (default): <workflow name>_<step name>_plot."
     },
     {
       "kind": "StringProperty",
@@ -113,7 +113,7 @@
     {
       "kind": "EnumeratedProperty",
       "name": "theme",
-      "defaultValue": "light",
+      "defaultValue": "minimal",
       "values": [
         "gray",
         "bw",

@@ -126,5 +126,72 @@ check("dodge: as ggplot", same_bars(bars(by_day, TRUE, "dodge", 0.8), plain(by_d
 check("dodge with x = colour factor: as ggplot",
       same_bars(bars(x_label, TRUE, "dodge", 0.8), plain(x_label, position_dodge(width = 0.8))))
 
+cat("-- facets\n")
+# get_facet_formula needs only the factor names and the facet values of the
+# context; a list stands in for it.
+fake_ctx <- function(rnames, cnames, rows, cols) {
+  list(
+    rnames = as.list(rnames), cnames = as.list(cnames),
+    rselect = function(...) tibble::as_tibble(rows),
+    cselect = function(...) tibble::as_tibble(cols)
+  )
+}
+# The facet for a context, or NULL when building it fails (reported, not fatal).
+facet_for <- function(ctx, wrap, scales = "fixed") {
+  tryCatch(get_facet_formula(ctx, wrap.1d = wrap, scales_mode = scales),
+           error = function(e) { message("  error: ", conditionMessage(e)); NULL })
+}
+# Draws the whole chart (build + gtable), so errors raised at draw time count.
+draws <- function(facet, df) {
+  p <- suppressWarnings(ggplot(df, aes(x = .x, y = .y)) + geom_bar(stat = "identity") + facet)
+  if (is.null(facet)) return(FALSE)
+  ok <- tryCatch({ suppressWarnings(ggplot_gtable(ggplot_build(p))); TRUE },
+                 error = function(e) { message("  error: ", conditionMessage(e)); FALSE })
+  ok
+}
+cols_only <- fake_ctx("", c("Donor", "Sample"), data.frame(),
+                      data.frame(Donor = c("D1", "D1", "D2"), Sample = c("S1", "S2", "S1")))
+df_1d <- data.frame(.ri = 0, .ci = c(0, 1, 2), .x = 1, .y = c(1, 2, 3))
+f <- facet_for(cols_only, TRUE)
+check("columns only, wrap.1d: wrapped panels", inherits(f, "FacetWrap"))
+check("columns only, wrap.1d: the chart draws", draws(f, df_1d))
+check("columns only, wrap.1d: strips on the left", identical(f$params$strip.position, "left"))
+rows_only <- fake_ctx("Sample", "", data.frame(Sample = c("S1", "S2", "S3")), data.frame())
+df_rows <- data.frame(.ri = c(0, 1, 2), .ci = 0, .x = 1, .y = c(1, 2, 3))
+check("rows only, wrap.1d: the chart draws",
+      draws(facet_for(rows_only, TRUE, "free_y"), df_rows))
+check("columns only, no wrap: a grid that draws",
+      draws(facet_for(cols_only, FALSE), df_1d))
+both <- fake_ctx("Group", "Sample", data.frame(Group = c("G1", "G2")), data.frame(Sample = c("S1", "S2")))
+df_2d <- data.frame(.ri = c(0, 0, 1, 1), .ci = c(0, 1, 0, 1), .x = 1, .y = 1:4)
+f <- facet_for(both, TRUE)
+check("rows and columns: a grid that draws", inherits(f, "FacetGrid") && draws(f, df_2d))
+
+cat("-- operator.json settings\n")
+props <- jsonlite::read_json("operator.json")$properties
+enum <- Filter(function(p) p$kind == "EnumeratedProperty", props)
+for (p in enum) {
+  check(paste0(p$name, ": the default is one of its values"), p$defaultValue %in% unlist(p$values))
+}
+theme <- Find(function(p) p$name == "theme", props)
+check("theme: minimal by default", identical(theme$defaultValue, "minimal"))
+check("theme: every value is a ggplot2 theme",
+      all(vapply(unlist(theme$values), function(t) exists(paste0("theme_", t), mode = "function"), TRUE)))
+
+cat("-- output file name\n")
+check("default: <workflow>_<step>_plot",
+      identical(plot_file_prefix("", "PTK analysis", "Plot bars"), "PTK_analysis_Plot_bars_plot"))
+check("the old default Tercen_Plot (stored by existing steps) is treated as the default",
+      identical(plot_file_prefix("Tercen_Plot", "wf", "step"), "wf_step_plot"))
+check("a prefix set by the user is kept",
+      identical(plot_file_prefix("my figure", "wf", "step"), "my figure"))
+check("no slashes or unsafe characters: they become _",
+      identical(plot_file_prefix("", "a/b\\c: d*?", "CRP-A 1/PGI2 100"), "a_b_c_d_CRP-A_1_PGI2_100_plot"))
+check("missing names are left out", identical(plot_file_prefix("", NULL, "step"), "step_plot") &&
+        identical(plot_file_prefix(NULL, "", ""), "plot"))
+check("long names are cut", nchar(plot_file_prefix("", strrep("w", 300), strrep("s", 300))) == 80 + 1 + 80 + 5)
+default_prefix <- Find(function(p) p$name == "file.name.prefix", props)$defaultValue
+check("operator.json: the default prefix is empty", identical(default_prefix, ""))
+
 cat("\n", length(failures), " failed\n", sep = "")
 if (length(failures)) quit(status = 1)

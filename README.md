@@ -37,6 +37,11 @@ The operator maps the input data projected in Tercen to a ggplot chart.
 The order of the bars, and of the layers of a stacked cell, is the x axis order. Without an x
 axis it is the crosstab order, by magnitude.
 
+**Output file name.** The image is named `<workflow name>_<step name>_plot.png`. Spaces, slashes
+and other characters that do not belong in a file name become `_`. Set `file.name.prefix` to use
+your own name instead. With several images (`split_cells`, or a page factor) each image is
+`<prefix>_<row>_<column>.png` and all of them are also in `<prefix>.zip`.
+
 ##### Unit tests
 
 `unit_tests/run.R` checks the bar placement (order, stacking, fill) by building the bar layer and
