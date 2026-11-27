@@ -116,7 +116,19 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
   rnames <- paste0("`", rnames, "`")
   cnames <- paste0("`", cnames, "`")
 
-  if (any(c(rnames, cnames) %in% c(".", "`.`")) & wrap.1d) {
+  no_rows <- all(rnames %in% c(".", "`.`"))
+  no_cols <- all(cnames %in% c(".", "`.`"))
+  if (wrap.1d && xor(no_rows, no_cols)) {
+    # One side of the crosstab has factors: one strip per panel, from that side only (faceting by both drew
+    # an empty strip for the other side beside every label). Strips stay on the left, as before.
+    facet <- if (no_rows) {
+      facet_wrap(~ .ci, labeller = labeller(.ci = col_labs), scales = scales_mode,
+                 strip.position = "left", drop = TRUE)
+    } else {
+      facet_wrap(~ .ri, labeller = labeller(.ri = row_labs), scales = scales_mode,
+                 strip.position = "left", drop = TRUE)
+    }
+  } else if (any(c(rnames, cnames) %in% c(".", "`.`")) & wrap.1d) {
     facet <- facet_wrap(
       ~ .ri + .ci,
       labeller = labeller(.ri = row_labs, .ci = col_labs),
@@ -161,6 +173,17 @@ get_settings <- function(ctx) {
   names(input.par) <- lapply(props, "[[", "name")
   
   return(input.par)
+}
+
+
+#####
+### Legend title
+
+# The legend title, for the fill and the colour legends alike. ggplot2 4 fills plt$labels in only when the plot
+# is built, so the title is set with labs(); a title for an aesthetic the plot does not map is ignored.
+with_legend_title <- function(plt, title) {
+  if (is.null(title) || identical(title, "")) return(plt)
+  plt + labs(fill = title, colour = title)
 }
 
 
@@ -664,10 +687,7 @@ generate_plot <-
         y = ylab
       )
     
-    if(input.par$legend.title != "") {
-      if(!is.null(plt$labels$fill)) plt$labels$fill <- input.par$legend.title 
-      if(!is.null(plt$labels$color)) plt$labels$color <- input.par$legend.title 
-    }
+    plt <- with_legend_title(plt, input.par$legend.title)
     
     th <- get(paste0("theme_", input.par$theme))
     theme_set(th(base_size = input.par$base.size))

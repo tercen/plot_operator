@@ -156,6 +156,10 @@ f <- facet_for(cols_only, TRUE)
 check("columns only, wrap.1d: wrapped panels", inherits(f, "FacetWrap"))
 check("columns only, wrap.1d: the chart draws", draws(f, df_1d))
 check("columns only, wrap.1d: strips on the left", identical(f$params$strip.position, "left"))
+check("columns only, wrap.1d: one strip per panel, from the columns (no empty row strip)",
+      identical(names(f$params$facets), ".ci"))
+f_rows <- facet_for(fake_ctx("Sample", "", data.frame(Sample = c("S1", "S2", "S3")), data.frame()), TRUE)
+check("rows only, wrap.1d: one strip per panel, from the rows", identical(names(f_rows$params$facets), ".ri"))
 rows_only <- fake_ctx("Sample", "", data.frame(Sample = c("S1", "S2", "S3")), data.frame())
 df_rows <- data.frame(.ri = c(0, 1, 2), .ci = 0, .x = 1, .y = c(1, 2, 3))
 check("rows only, wrap.1d: the chart draws",
@@ -205,6 +209,13 @@ check("last falls back to every factor when the last one repeats",
       identical(heatmap_axis_labels(data.frame(a = c("x", "y"), b = c("m", "m")), "last"), c("x\nm", "y\nm")))
 check("one factor: the same either way",
       identical(heatmap_axis_labels(data.frame(a = c("p", "q")), "last"), c("p", "q")))
+cat("-- legend title\n")
+built_labels <- function(p) ggplot_build(p)$plot$labels
+pc <- ggplot(data.frame(x = 1:2, y = 1:2, s = c("a", "b")), aes(x, y, colour = s)) + geom_point()
+check("legend.title names the colour legend", identical(built_labels(with_legend_title(pc, "subject"))$colour, "subject"))
+pf <- ggplot(data.frame(x = 1:2, y = 1:2, v = c(1, 2)), aes(x, y, fill = v)) + geom_tile()
+check("legend.title names the fill legend (heatmap)", identical(built_labels(with_legend_title(pf, "median"))$fill, "median"))
+check("an empty legend.title keeps the factor name", identical(built_labels(with_legend_title(pc, ""))$colour, "s"))
 hl <- Find(function(p) p$name == "heatmap_labels", props)
 check("operator.json: heatmap_labels defaults to all", identical(hl$defaultValue, "all"))
 
