@@ -143,8 +143,17 @@ get_facet_formula <- function(ctx, wrap.1d, scales_mode) {
     # only 12 wells × 50 markers populated still draws 24 × 112 panels
     # of which most are empty, easily blowing past ggsave's 50-inch
     # limit on a workflow where the row/col axes are wide.
+    # A grid with factors on one side only facets by that side: `.ri ~ .ci` drew an empty strip for the other
+    # side (a grey bar beside the panels of e.g. a UMAP split by condition).
+    facets <- if (no_rows && !no_cols) {
+      . ~ .ci
+    } else if (no_cols && !no_rows) {
+      .ri ~ .
+    } else {
+      .ri ~ .ci
+    }
     facet <- facet_grid(
-      .ri ~ .ci,
+      facets,
       labeller = labeller(.rows = row_labs, .cols = col_labs),
       scales = scales_mode,
       switch = "y",
