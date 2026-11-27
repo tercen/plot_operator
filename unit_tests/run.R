@@ -193,5 +193,20 @@ check("long names are cut", nchar(plot_file_prefix("", strrep("w", 300), strrep(
 default_prefix <- Find(function(p) p$name == "file.name.prefix", props)$defaultValue
 check("operator.json: the default prefix is empty", identical(default_prefix, ""))
 
+cat("-- heatmap axis labels\n")
+# rows of a Ward-ordered heatmap: the clustering's order first, then the marker
+rsel <- data.frame(hc.rorder = c(0, 1, 2), c.antigen = c("CD161", "CD56", "CD38"))
+check("all (default): every factor, one per line, as before",
+      identical(heatmap_axis_labels(rsel), c("0\nCD161", "1\nCD56", "2\nCD38")) &&
+        identical(heatmap_axis_labels(rsel, "all"), heatmap_axis_labels(rsel)))
+check("last: only the name, the order factor still sorts the crosstab",
+      identical(heatmap_axis_labels(rsel, "last"), c("CD161", "CD56", "CD38")))
+check("last falls back to every factor when the last one repeats",
+      identical(heatmap_axis_labels(data.frame(a = c("x", "y"), b = c("m", "m")), "last"), c("x\nm", "y\nm")))
+check("one factor: the same either way",
+      identical(heatmap_axis_labels(data.frame(a = c("p", "q")), "last"), c("p", "q")))
+hl <- Find(function(p) p$name == "heatmap_labels", props)
+check("operator.json: heatmap_labels defaults to all", identical(hl$defaultValue, "all"))
+
 cat("\n", length(failures), " failed\n", sep = "")
 if (length(failures)) quit(status = 1)
