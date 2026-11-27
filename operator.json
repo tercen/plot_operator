@@ -197,6 +197,16 @@
       "description": "Add axes labels on a heatmap based on row and columns factors."
     },
     {
+      "kind": "EnumeratedProperty",
+      "name": "heatmap_labels",
+      "defaultValue": "all",
+      "values": [
+        "all",
+        "last"
+      ],
+      "description": "Heatmap axis labels: every row/column factor (all), or only the last one (last), e.g. when an order factor comes before the name."
+    },
+    {
       "kind": "StringProperty",
       "name": "default.color",
       "defaultValue": "#36454f",

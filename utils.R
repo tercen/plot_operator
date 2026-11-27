@@ -165,6 +165,24 @@ get_settings <- function(ctx) {
 
 
 #####
+### Heatmap axis labels
+
+# The labels of one heatmap axis, from that side's factors (ctx$cselect() or ctx$rselect(), one row per column
+# or row of the crosstab). "all": every factor, one per line (the default). "last": only the last factor, for a
+# crosstab that puts an order factor first (e.g. a clustering's row order, then the marker name): the order
+# factor sorts the axis but would otherwise print above every name, and the two lines collide on a dense
+# axis. Falls back to every factor when the last one alone does not tell the rows apart.
+heatmap_axis_labels <- function(sel, labels = "all") {
+  sel <- as.data.frame(sel)
+  if (identical(labels, "last") && ncol(sel) > 1) {
+    last <- as.character(sel[[ncol(sel)]])
+    if (!anyDuplicated(last)) return(last)
+  }
+  do.call(paste, c(lapply(sel, as.character), sep = "\n"))
+}
+
+
+#####
 ### Data preprocessing
 
 getValues <- function(ctx, is_2d_histogram = FALSE) {
@@ -402,11 +420,9 @@ generate_plot <-
       layer <- which(chart_types == "ChartHeatmap")[1] - 1L
       df_plot <- df %>% filter(.axisIndex == layer)
       
-      x_labels <- ctx$cselect() %>%
-        tidyr::unite("x_label", sep = "\n") %>%
+      x_labels <- data.frame(x_label = heatmap_axis_labels(ctx$cselect(), input.par$heatmap_labels)) %>%
         mutate(.ci = seq_len(nrow(.)) - 1L)
-      y_labels <- ctx$rselect() %>%
-        tidyr::unite("y_label", sep = "\n") %>%
+      y_labels <- data.frame(y_label = heatmap_axis_labels(ctx$rselect(), input.par$heatmap_labels)) %>%
         mutate(.ri = seq_len(nrow(.)) - 1L)
       df_plot <- df_plot %>%
         left_join(x_labels, by = ".ci") %>%
