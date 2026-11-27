@@ -166,10 +166,18 @@ check("rows only, wrap.1d: the chart draws",
       draws(facet_for(rows_only, TRUE, "free_y"), df_rows))
 check("columns only, no wrap: a grid that draws",
       draws(facet_for(cols_only, FALSE), df_1d))
+g <- facet_for(cols_only, FALSE)
+check("columns only, no wrap: no row strip (faceted by the columns only)",
+      length(g$params$rows) == 0 && identical(names(g$params$cols), ".ci"))
+g_rows <- facet_for(rows_only, FALSE)
+check("rows only, no wrap: no column strip", length(g_rows$params$cols) == 0 && identical(names(g_rows$params$rows), ".ri") &&
+        draws(g_rows, df_rows))
 both <- fake_ctx("Group", "Sample", data.frame(Group = c("G1", "G2")), data.frame(Sample = c("S1", "S2")))
 df_2d <- data.frame(.ri = c(0, 0, 1, 1), .ci = c(0, 1, 0, 1), .x = 1, .y = 1:4)
 f <- facet_for(both, TRUE)
 check("rows and columns: a grid that draws", inherits(f, "FacetGrid") && draws(f, df_2d))
+check("rows and columns, no wrap: both", identical(names(facet_for(both, FALSE)$params$rows), ".ri") &&
+        identical(names(facet_for(both, FALSE)$params$cols), ".ci"))
 
 cat("-- operator.json settings\n")
 props <- jsonlite::read_json("operator.json")$properties
